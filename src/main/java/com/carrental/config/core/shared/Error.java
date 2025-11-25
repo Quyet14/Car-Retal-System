@@ -1,13 +1,10 @@
 package com.carrental.config.core.shared;
 
-import lombok.Getter;
-
 import java.util.Objects;
 
 /**
  * Lớp đại diện cho một lỗi nghiệp vụ/ứng dụng.
  */
-@Getter
 public class Error {
     public static final Error NONE = new Error("", "");
     public static final Error NULL_VALUE = new Error("Error.NullValue", "The specified result value is null.");
@@ -18,6 +15,14 @@ public class Error {
     public Error(String code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     @Override
