@@ -18,30 +18,49 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "reservations")
+@Table(name = "Reservations")
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "CarId", nullable = false)
     private Car car;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "UserId", nullable = false)
     private ApplicationUser user;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "StartDate", nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "EndDate", nullable = false)
     private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(name = "Status", length = 20)
     private ReservationStatus status = ReservationStatus.PENDING;
+
+    @Column(name = "PickupLocation")
+    private String pickupLocation;
+
+    @Column(name = "FullName")
+    private String fullName;
+
+    @Column(name = "Phone")
+    private String phone;
+
+    @Column(name = "Email")
+    private String email;
+
+    @Column(name = "Notes")
+    private String notes;
+
+    @Column(name = "TotalPrice")
+    private Double totalPrice;
 
     public enum ReservationStatus {
         PENDING, CONFIRMED, CANCELLED, COMPLETED

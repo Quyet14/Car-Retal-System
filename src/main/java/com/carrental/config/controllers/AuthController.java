@@ -47,9 +47,20 @@ public class AuthController {
                 : handleResultFailure(result);
     }
 
+    // POST /api/auth/register-admin
+    @PostMapping("/register-admin")
+    public ResponseEntity<Object> registerAdmin(@Valid @RequestBody RegisterUserCommand command) {
+        Result<Void> result = userService.registerAdmin(command);
+        return result.isSuccess()
+                ? new ResponseEntity<>(HttpStatus.CREATED)
+                : handleResultFailure(result);
+    }
+
     // POST /api/auth/login
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@Valid @RequestBody LoginUserCommand command) {
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginUserCommand command, 
+                                       jakarta.servlet.http.HttpServletRequest request,
+                                       jakarta.servlet.http.HttpServletResponse response) {
         // 1. Kiểm tra logic nghiệp vụ (EmailConfirmed)
         Result<Void> preCheckResult = preLoginChecks(command);
         if (preCheckResult.isFailure()) {
@@ -62,7 +73,17 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(command.getEmail(), command.getPassword())
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // Lưu authentication vào SecurityContext
+            org.springframework.security.core.context.SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            securityContext.setAuthentication(authentication);
+            SecurityContextHolder.setContext(securityContext);
+            
+            // Lưu SecurityContext vào session
+            jakarta.servlet.http.HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+            
+            System.out.println("DEBUG - Login successful, session ID: " + session.getId());
+            System.out.println("DEBUG - Authentication: " + authentication);
 
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
@@ -71,12 +92,13 @@ public class AuthController {
     }
 
     private Result<Void> preLoginChecks(LoginUserCommand command) {
-        ApplicationUser user = userService.userRepository.findByEmail(command.getEmail()).orElse(null);
-
-        if (user == null) {
+        Result<ApplicationUser> userResult = userService.findUserByEmail(command.getEmail());
+        
+        if (userResult.isFailure()) {
             return Result.failure(DomainErrors.USER_WITH_EMAIL_NOT_FOUND);
         }
-
+        
+        ApplicationUser user = userResult.getValue();
         if (!user.getEmailConfirmed()) {
             System.out.println("NOTIFICATION [Error]: Email address must be confirmed first");
             return Result.failure(DomainErrors.USER_EMAIL_NOT_CONFIRMED);
@@ -120,7 +142,18 @@ public class AuthController {
     // GET /api/auth/profile
     @GetMapping("/profile")
     public ResponseEntity<Object> getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("DEBUG - Authentication: " + auth);
+        System.out.println("DEBUG - Principal: " + (auth != null ? auth.getPrincipal() : "null"));
+        System.out.println("DEBUG - Authenticated: " + (auth != null ? auth.isAuthenticated() : "false"));
+        
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            System.out.println("DEBUG - User not authenticated");
+            return new ResponseEntity<>(new ErrorResponse(DomainErrors.USER_CREDENTIALS_INVALID), HttpStatus.UNAUTHORIZED);
+        }
+        
+        String email = auth.getName();
+        System.out.println("DEBUG - Email: " + email);
         Result<CurrentUserResponse> result = userService.getCurrentUser(email);
 
         return result.isSuccess()
@@ -131,11 +164,14 @@ public class AuthController {
     // PUT /api/auth/profile
     @PutMapping("/profile")
     public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateUserCommand command) {
-        String userId = userService.userRepository.findByEmail(
-                        SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found"))
-                .getId();
-
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Result<ApplicationUser> userResult = userService.findUserByEmail(email);
+        
+        if (userResult.isFailure()) {
+            return new ResponseEntity<>(new ErrorResponse(DomainErrors.USER_WITH_EMAIL_NOT_FOUND), HttpStatus.NOT_FOUND);
+        }
+        
+        String userId = userResult.getValue().getId();
         Result<Void> result = userService.updateUserProfile(userId, command);
 
         return result.isSuccess()

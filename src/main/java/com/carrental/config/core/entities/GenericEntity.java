@@ -20,19 +20,23 @@ public abstract class GenericEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "Id", columnDefinition = "NVARCHAR(450)")
     private String id;
 
-    @Column(name = "date_create")
+    @Column(name = "DateCreate")
     private LocalDateTime dateCreate;
 
-    @Column(name = "date_change")
+    @Column(name = "DateChange")
     private LocalDateTime dateChange;
 
-    @Column(name = "changed_by", length = 2000)
+    @Column(name = "ChangedBy")
     private String changedBy;
 
-    @Column(name = "create_by", length = 2000)
+    @Column(name = "CreateBy")
     private String createBy;
+
+    @Column(name = "IsDeleted", nullable = false)
+    private Boolean isDeleted = false;
 
     @PrePersist
     protected void onCreate() {
