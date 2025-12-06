@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental System - Hệ thống thuê xe</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🚗 Car Rental</h1>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="/index.html" class="nav-link active">Trang chủ</a>
+                <a href="/cars/cars.html" class="nav-link">Xe cho thuê</a>
+                <a href="#about" class="nav-link">Giới thiệu</a>
+                <a href="#contact" class="nav-link">Liên hệ</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/auth/login.html" class="btn btn-outline">Đăng nhập</a>
+                <a href="/auth/register.html" class="btn btn-primary">Đăng ký</a>
+            </div>
+            <div class="nav-user" id="navUser" style="display: none;">
+                <a href="/admin/dashboard.html" class="nav-link" id="adminLink" style="display: none;">Admin Panel</a>
+                <a href="/profile/profile.html" class="user-name" id="userName"></a>
+                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Thuê xe dễ dàng, lái xe thoải mái</h1>
+                <p class="hero-subtitle">Hơn 1000+ xe chất lượng cao sẵn sàng phục vụ bạn</p>
+                <div class="hero-search">
+                    <input type="text" placeholder="Tìm kiếm xe..." class="search-input">
+                    <a href="/cars/cars.html" class="btn btn-primary btn-lg">Xem tất cả xe</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="section-title">Dịch vụ của chúng tôi</h2>
+            <div class="about-content">
+                <div class="about-card">
+                    <div class="about-icon">🚗</div>
+                    <h3>Đa dạng xe</h3>
+                    <p>Hơn 1000+ xe từ phổ thông đến cao cấp</p>
+                    <a href="/cars/cars.html" class="btn btn-outline" style="margin-top: 1rem;">Xem xe</a>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">📱</div>
+                    <h3>Đặt xe dễ dàng</h3>
+                    <p>Đăng ký và thuê xe chỉ trong vài phút</p>
+                    <a href="/cars/cars.html" class="btn btn-outline" style="margin-top: 1rem;" id="bookCarBtn">Đặt xe ngay</a>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">👤</div>
+                    <h3>Quản lý tài khoản</h3>
+                    <p>Theo dõi lịch sử thuê xe và thông tin cá nhân</p>
+                    <a href="/profile/profile.html" class="btn btn-outline" style="margin-top: 1rem;" id="profileBtn">Tài khoản</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section bg-light">
+        <div class="container">
+            <h2 class="section-title">Về chúng tôi</h2>
+            <div class="about-content">
+                <div class="about-card">
+                    <div class="about-icon">🚗</div>
+                    <h3>1000+ Xe</h3>
+                    <p>Đa dạng các loại xe từ phổ thông đến cao cấp</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">⭐</div>
+                    <h3>Chất lượng</h3>
+                    <p>Xe được bảo dưỡng định kỳ, đảm bảo an toàn</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">💰</div>
+                    <h3>Giá tốt</h3>
+                    <p>Giá cả cạnh tranh, nhiều ưu đãi hấp dẫn</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🔒</div>
+                    <h3>An toàn</h3>
+                    <p>Bảo hiểm toàn diện, hỗ trợ 24/7</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title">Liên hệ</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Thông tin liên hệ</h3>
+                    <p>📍 Địa chỉ: 364 Đ. Cộng Hòa, Phường 13, Tân Bình, TP.HCM</p>
+                    <p>📞 Điện thoại: 1900 xxxx</p>
+                    <p>📧 Email: contact@carrental.vn</p>
+                </div>
+                <div class="contact-form">
+                    <h3>Gửi tin nhắn</h3>
+                    <input type="text" placeholder="Họ tên" class="form-input">
+                    <input type="email" placeholder="Email" class="form-input">
+                    <textarea placeholder="Nội dung" class="form-textarea"></textarea>
+                    <button class="btn btn-primary">Gửi</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Car Rental System. All rights reserved.</p>
+            <p><a href="/admin/dashboard.html" style="color: rgba(255,255,255,0.7);">Admin Panel</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Check authentication status v2
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentUser = localStorage.getItem('currentUser');
+            const navAuth = document.getElementById('navAuth');
+            const navUser = document.getElementById('navUser');
+            const userName = document.getElementById('userName');
+            const profileBtn = document.getElementById('profileBtn');
+            const adminLink = document.getElementById('adminLink');
+
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    // Update navigation
+                    navAuth.style.display = 'none';
+                    navUser.style.display = 'flex';
+                    userName.textContent = `${user.firstName} ${user.lastName}`;
+                    
+                    // Show admin link if user is admin
+                    if (user.roles && user.roles.includes('Admin')) {
+                        adminLink.style.display = 'block';
+                    }
+                    
+                    // Update profile button
+                    if (profileBtn) {
+                        profileBtn.textContent = 'Xem tài khoản';
+                        profileBtn.href = '/profile/profile.html';
+                    }
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            } else {
+                navAuth.style.display = 'flex';
+                navUser.style.display = 'none';
+                
+                // Update profile button for non-logged in users
+                if (profileBtn) {
+                    profileBtn.textContent = 'Đăng nhập';
+                    profileBtn.href = '/auth/login.html';
+                }
+            }
+        });
+
+        function logout() {
+            fetch('/api/auth/logout', {
+                credentials: 'include'
+            }).finally(() => {
+                localStorage.removeItem('currentUser');
+                window.location.reload();
+            });
+        }
+    </script>
+</body>
+</html>

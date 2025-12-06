@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xe cho thuê - Car Rental System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1><a href="/index.html" style="color: inherit; text-decoration: none;">🚗 Car Rental</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">Trang chủ</a>
+                <a href="/cars/cars.html" class="nav-link active">Xe cho thuê</a>
+                <a href="/index.html#about" class="nav-link">Giới thiệu</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/auth/login.html" class="btn btn-outline">Đăng nhập</a>
+                <a href="/auth/register.html" class="btn btn-primary">Đăng ký</a>
+            </div>
+            <div class="nav-user" id="navUser" style="display: none;">
+                <a href="/profile/profile.html" class="user-name" id="userName"></a>
+                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <h1>Tìm xe phù hợp với bạn</h1>
+            <div class="hero-search">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm xe..." class="search-input">
+                <button class="btn btn-primary btn-lg" onclick="searchCars()">
+                    🔍 Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters & Cars -->
+    <section class="section">
+        <div class="container">
+            <div class="cars-layout">
+                <!-- Filters Sidebar -->
+                <aside class="filters-sidebar">
+                    <h3>Bộ lọc</h3>
+                    
+                    <div class="filter-group">
+                        <label>Địa điểm</label>
+                        <select id="locationFilter" class="form-input">
+                            <option value="">Tất cả địa điểm</option>
+                            <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                            <option value="Hà Nội">Hà Nội</option>
+                            <option value="Đà Nẵng">Đà Nẵng</option>
+                            <option value="Cần Thơ">Cần Thơ</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Hãng xe</label>
+                        <select id="brandFilter" class="form-input">
+                            <option value="">Tất cả hãng</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Ford">Ford</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="Audi">Audi</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Giá tối đa (VNĐ/ngày)</label>
+                        <input type="number" id="priceFilter" placeholder="1,000,000" class="form-input">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Năm sản xuất</label>
+                        <select id="yearFilter" class="form-input">
+                            <option value="">Tất cả</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" onclick="applyFilters()">
+                        Áp dụng bộ lọc
+                    </button>
+                    <button class="btn btn-outline btn-block" onclick="clearFilters()">
+                        Xóa bộ lọc
+                    </button>
+                </aside>
+
+                <!-- Cars Grid -->
+                <div class="cars-main">
+                    <div class="cars-header">
+                        <h2>Danh sách xe</h2>
+                        <select id="sortBy" class="form-input" onchange="sortCars()">
+                            <option value="default">Sắp xếp</option>
+                            <option value="price-asc">Giá: Thấp đến cao</option>
+                            <option value="price-desc">Giá: Cao đến thấp</option>
+                            <option value="year-desc">Năm: Mới nhất</option>
+                        </select>
+                    </div>
+
+                    <div id="carsGrid" class="cars-grid">
+                        <div class="loading">Đang tải danh sách xe...</div>
+                    </div>
+
+                    <div id="pagination" class="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Car Detail Modal -->
+    <div id="carModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeCarModal()">&times;</span>
+            <div id="carDetail"></div>
+        </div>
+    </div>
+
+    <script src="/js/cars.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Car Rental System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🚗 Car Rental</h1>
+                <h2>Đăng nhập</h2>
+                <p>Chào mừng bạn quay trở lại!</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="example@email.com" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" required 
+                           placeholder="••••••••" class="form-input">
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="remember">
+                        <span>Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a href="/auth/forgot-password.html" class="link">Quên mật khẩu?</a>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+                    Đăng nhập
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Chưa có tài khoản? <a href="/auth/register.html" class="link">Đăng ký ngay</a></p>
+                <p><a href="/index.html" class="link">← Quay về trang chủ</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

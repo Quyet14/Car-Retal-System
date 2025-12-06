@@ -19,36 +19,39 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cars")
+@Table(name = "Cars")
 public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "make_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "MakeId", nullable = false, columnDefinition = "NVARCHAR(450)")
     private CarBrand make;
 
-    @Column(name = "model", nullable = false)
+    @Column(name = "Model", nullable = false)
     private String model;
 
-    @Column(name = "production_year", nullable = false)
+    @Column(name = "Year", nullable = false)
     private Integer year;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "LocationId", nullable = false, columnDefinition = "NVARCHAR(450)")
     private Location location;
 
-    @Column(name = "image_name", length = 256)
-    private String imageName;
+    @Column(name = "ImageName", length = 256, nullable = false)
+    private String imageName = "";
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "Amount", nullable = false)
     private Double amount; 
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Reservation> reservations = new HashSet<>();
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<CarImage> images = new HashSet<>();
 }

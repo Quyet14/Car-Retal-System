@@ -19,25 +19,26 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
-@Table(name = "locations")
+@Table(name = "Locations")
 public class Location extends GenericEntity {
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "Name", nullable = false)
     private String name;
 
-    @Column(name = "slug", nullable = false)
+    @Column(name = "Slug", nullable = false)
     private String slug;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "Type", nullable = false)
     private String type;
 
-    @Column(name = "name_with_type", nullable = false)
+    @Column(name = "NameWithType", nullable = false)
     @JsonProperty("name_with_type") 
     private String nameWithType;
 
-    @Column(name = "code", nullable = false)
+    @Column(name = "Code", nullable = false)
     private String code;
 
     @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Car> cars = new HashSet<>();
 }

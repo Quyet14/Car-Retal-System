@@ -1,6 +1,7 @@
 package com.carrental.config.core.dtos;
 
 import lombok.Data;
+import java.util.Set;
 
 @Data
 public class CurrentUserResponse {
@@ -11,4 +12,5 @@ public class CurrentUserResponse {
     private String lastName;
     private String country;
     private Boolean emailConfirmed;
+    private Set<String> roles;
 }

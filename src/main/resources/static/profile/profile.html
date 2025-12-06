@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - Car Rental System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1><a href="/index.html" style="color: inherit; text-decoration: none;">🚗 Car Rental</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">Trang chủ</a>
+                <a href="/cars/cars.html" class="nav-link">Xe cho thuê</a>
+                <a href="/profile/profile.html" class="nav-link active">Tài khoản</a>
+            </div>
+            <div class="nav-user">
+                <span class="user-name" id="userName"></span>
+                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <section class="section">
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-sidebar">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            <span id="avatarInitials">U</span>
+                        </div>
+                        <h3 id="profileName">User Name</h3>
+                        <p id="profileEmail">user@email.com</p>
+                    </div>
+                    <nav class="profile-nav">
+                        <a href="#info" class="profile-nav-link active">Thông tin cá nhân</a>
+                        <a href="#reservations" class="profile-nav-link">Đơn thuê xe</a>
+                        <a href="#security" class="profile-nav-link">Bảo mật</a>
+                    </nav>
+                </div>
+
+                <div class="profile-content">
+                    <!-- Personal Info -->
+                    <div id="info" class="profile-section active">
+                        <h2>Thông tin cá nhân</h2>
+                        <form id="profileForm" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Họ</label>
+                                    <input type="text" name="firstName" id="firstName" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tên</label>
+                                    <input type="text" name="lastName" id="lastName" class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="email" id="email" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Quốc gia</label>
+                                <select name="country" id="country" class="form-input">
+                                    <option value="Vietnam">Việt Nam</option>
+                                    <option value="United States">United States</option>
+                                    <option value="Japan">Japan</option>
+                                </select>
+                            </div>
+                            <div id="updateMessage" class="success-message"></div>
+                            <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                        </form>
+                    </div>
+
+                    <!-- Reservations -->
+                    <div id="reservations" class="profile-section">
+                        <h2>Đơn thuê xe của tôi</h2>
+                        <div id="reservationsList" class="reservations-list">
+                            <p class="empty-state">Bạn chưa có đơn thuê xe nào</p>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div id="security" class="profile-section">
+                        <h2>Bảo mật</h2>
+                        <form id="passwordForm" class="profile-form">
+                            <div class="form-group">
+                                <label>Mật khẩu hiện tại</label>
+                                <input type="password" name="currentPassword" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Mật khẩu mới</label>
+                                <input type="password" name="newPassword" class="form-input" minlength="8">
+                            </div>
+                            <div class="form-group">
+                                <label>Xác nhận mật khẩu mới</label>
+                                <input type="password" name="confirmPassword" class="form-input">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="/js/profile.js"></script>
+</body>
+</html>

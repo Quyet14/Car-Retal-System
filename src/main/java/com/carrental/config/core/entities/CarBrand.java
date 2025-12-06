@@ -17,12 +17,13 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
-@Table(name = "car_brands")
+@Table(name = "CarBrands")
 public class CarBrand extends GenericEntity {
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "Name", nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "make", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Car> cars = new HashSet<>();
 }

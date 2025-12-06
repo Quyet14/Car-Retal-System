@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết xe - Car Rental System</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1><a href="/index.html" style="color: inherit; text-decoration: none;">🚗 Car Rental</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="/index.html" class="nav-link">Trang chủ</a>
+                <a href="/cars/cars.html" class="nav-link active">Xe cho thuê</a>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <a href="/auth/login.html" class="btn btn-outline">Đăng nhập</a>
+            </div>
+            <div class="nav-user" id="navUser" style="display: none;">
+                <a href="/profile/profile.html" class="user-name" id="userName"></a>
+                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Car Detail Section -->
+    <section class="section">
+        <div class="container">
+            <a href="/cars/cars.html" class="back-link">← Quay lại danh sách</a>
+            
+            <div class="car-detail-container">
+                <!-- Car Images -->
+                <div class="car-images">
+                    <div class="main-image">
+                        <img id="mainImage" src="" alt="Car Image">
+                    </div>
+                </div>
+
+                <!-- Car Info -->
+                <div class="car-info-box">
+                    <h1 id="carName">Tên xe</h1>
+                    <div class="car-price">
+                        <span id="carPrice">0</span> VNĐ/ngày
+                    </div>
+                    
+                    <div class="car-specs">
+                        <div class="spec-item">
+                            <span class="spec-label">Hãng xe:</span>
+                            <span id="carBrand">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Năm sản xuất:</span>
+                            <span id="carYear">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Số chỗ:</span>
+                            <span id="carSeats">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Truyền động:</span>
+                            <span id="carTransmission">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Nhiên liệu:</span>
+                            <span id="carFuel">-</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Địa điểm:</span>
+                            <span id="carLocation">-</span>
+                        </div>
+                    </div>
+
+                    <div class="car-description">
+                        <h3>Mô tả</h3>
+                        <p id="carDescription">Thông tin chi tiết về xe...</p>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg btn-block" onclick="bookCar()">
+                        Đặt xe ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Get car ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const carId = urlParams.get('id');
+
+        // Check auth
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+            document.getElementById('navAuth').style.display = 'none';
+            document.getElementById('navUser').style.display = 'flex';
+            const user = JSON.parse(currentUser);
+            document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+        }
+
+        // Load car details
+        if (carId) {
+            loadCarDetail(carId);
+        } else {
+            alert('Không tìm thấy thông tin xe');
+            window.location.href = '/cars/cars.html';
+        }
+
+        async function loadCarDetail(id) {
+            try {
+                const response = await fetch(`/api/cars/${id}`, { credentials: 'include' });
+                
+                if (response.ok) {
+                    const car = await response.json();
+                    
+                    document.getElementById('carName').textContent = `${car.make} ${car.model}`;
+                    document.getElementById('carPrice').textContent = car.amount.toLocaleString();
+                    document.getElementById('carBrand').textContent = car.make;
+                    document.getElementById('carYear').textContent = car.year;
+                    document.getElementById('carSeats').textContent = (car.seats || 5) + ' chỗ';
+                    document.getElementById('carTransmission').textContent = car.transmission || 'Tự động';
+                    document.getElementById('carFuel').textContent = car.fuel || 'Xăng';
+                    document.getElementById('carLocation').textContent = car.location;
+                    document.getElementById('carDescription').textContent = 'Xe chất lượng cao, bảo dưỡng định kỳ, phù hợp cho mọi nhu cầu di chuyển.';
+                    document.getElementById('mainImage').src = car.imageName || 'https://via.placeholder.com/600x400?text=' + car.make;
+                    document.getElementById('mainImage').alt = `${car.make} ${car.model}`;
+                } else {
+                    // Fallback to mock data
+                    const mockCar = {
+                        id: id,
+                        name: 'Toyota Camry 2024',
+                        brand: 'Toyota',
+                        year: 2024,
+                        price: 800000,
+                        seats: 5,
+                        transmission: 'Tự động',
+                        fuel: 'Xăng',
+                        location: 'Hồ Chí Minh',
+                        image: 'https://via.placeholder.com/600x400?text=Toyota+Camry',
+                        description: 'Xe sedan hạng trung, tiện nghi, phù hợp cho gia đình và công tác.'
+                    };
+
+                    document.getElementById('carName').textContent = mockCar.name;
+                    document.getElementById('carPrice').textContent = mockCar.price.toLocaleString();
+                    document.getElementById('carBrand').textContent = mockCar.brand;
+                    document.getElementById('carYear').textContent = mockCar.year;
+                    document.getElementById('carSeats').textContent = mockCar.seats + ' chỗ';
+                    document.getElementById('carTransmission').textContent = mockCar.transmission;
+                    document.getElementById('carFuel').textContent = mockCar.fuel;
+                    document.getElementById('carLocation').textContent = mockCar.location;
+                    document.getElementById('carDescription').textContent = mockCar.description;
+                    document.getElementById('mainImage').src = mockCar.image;
+                    document.getElementById('mainImage').alt = mockCar.name;
+                }
+            } catch (error) {
+                console.error('Error loading car:', error);
+                alert('Không thể tải thông tin xe');
+            }
+        }
+
+        function bookCar() {
+            if (!currentUser) {
+                alert('Vui lòng đăng nhập để đặt xe');
+                window.location.href = '/auth/login.html';
+                return;
+            }
+            window.location.href = '/cars/booking.html?carId=' + carId;
+        }
+
+        function logout() {
+            fetch('/api/auth/logout', { credentials: 'include' })
+                .finally(() => {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/index.html';
+                });
+        }
+    </script>
+</body>
+</html>
