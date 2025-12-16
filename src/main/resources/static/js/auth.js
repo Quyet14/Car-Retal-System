@@ -70,17 +70,17 @@ const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const formData = new FormData(loginForm);
         const data = {
             email: formData.get('email'),
             password: formData.get('password')
         };
-        
+
         const btn = document.getElementById('loginBtn');
         btn.disabled = true;
         btn.textContent = 'Đang đăng nhập...';
-        
+
         try {
             const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
@@ -90,18 +90,18 @@ if (loginForm) {
                 credentials: 'include',
                 body: JSON.stringify(data)
             });
-            
+
             if (response.ok) {
                 // Get user profile
                 const profileResponse = await fetch(`${API_URL}/api/auth/profile`, {
                     credentials: 'include'
                 });
-                
+
                 if (profileResponse.ok) {
                     const user = await profileResponse.json();
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     console.log('Login successful, user roles:', user.roles);
-                    
+
                     // Redirect based on role
                     if (user.roles && user.roles.includes('Admin')) {
                         console.log('Redirecting to admin dashboard...');
@@ -138,16 +138,16 @@ const forgotPasswordForm = document.getElementById('forgotPasswordForm');
 if (forgotPasswordForm) {
     forgotPasswordForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const formData = new FormData(forgotPasswordForm);
         const data = {
             email: formData.get('email')
         };
-        
+
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
         btn.textContent = 'Đang gửi...';
-        
+
         try {
             const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
                 method: 'POST',
@@ -156,7 +156,7 @@ if (forgotPasswordForm) {
                 },
                 body: JSON.stringify(data)
             });
-            
+
             if (response.ok) {
                 showSuccess('Link đặt lại mật khẩu đã được gửi đến email của bạn.');
                 forgotPasswordForm.reset();

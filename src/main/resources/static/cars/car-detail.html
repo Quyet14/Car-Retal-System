@@ -1,182 +1,438 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết xe - Car Rental System</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết xe - Car Rental</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <style>
+    :root{
+      --radius: 18px;
+      --gap: 12px;
+    }
+
+    /* ====== GALLERY MIOTO (main trái + 3 ảnh phải) ====== */
+    .mioto-gallery{
+      display:grid;
+      grid-template-columns: 2.35fr 1fr;
+      gap: var(--gap);
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+
+    /* MAIN: giữ form giống Mioto (to, rộng) */
+    .gallery-main{
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background:#f3f4f6;
+      aspect-ratio: 16 / 9;    /* quan trọng */
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    /* SIDE: 3 ảnh xếp dọc, mỗi ảnh cùng chiều cao */
+    .gallery-side{
+      display:flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    .side-item{
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background:#f3f4f6;
+      flex: 1;
+      min-height: 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    /* Để 3 ảnh phải "đều" và giống Mioto: ép mỗi item theo tỉ lệ */
+    .side-item::before{
+      content:"";
+      display:block;
+      aspect-ratio: 16 / 10;  /* hơi thấp hơn main */
+    }
+    .side-item > img{
+      position:absolute;
+      inset:0;
+    }
+
+    /* Ảnh fill khung */
+    .gallery-main img,
+    .side-item img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      cursor:pointer;
+      transition: transform .35s ease;
+    }
+    .gallery-main:hover img,
+    .side-item:hover img{
+      transform: scale(1.04);
+    }
+
+    /* Overlay +x */
+    .more-photos{
+      position:absolute;
+      inset:0;
+      background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.15));
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 1.6rem;
+      font-weight: 800;
+      pointer-events:none;
+    }
+
+    /* Nút xem tất cả ảnh (giống Mioto) */
+    .view-all-btn{
+      position:absolute;
+      right: 14px;
+      bottom: 14px;
+      background: rgba(255,255,255,.95);
+      border: 1px solid rgba(0,0,0,.08);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.12);
+      user-select:none;
+      pointer-events:auto;
+    }
+
+    /* ====== CARD ====== */
+    .card-soft{
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.06);
+      background:#fff;
+    }
+
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .85rem;
+      background: #E9FBF0;
+      color: #0f7a3c;
+    }
+    .status-dot{
+      width:8px;height:8px;border-radius:50%;
+      background:#16a34a;
+    }
+
+    .price-text{
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .spec-item{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      color:#6b7280;
+    }
+    .spec-item i{
+      width: 18px;
+      margin-top: 3px;
+      color:#6b7280;
+    }
+    .spec-item span.value{
+      color:#111827;
+      font-weight: 800;
+    }
+
+    .booking-card{
+      position: sticky;
+      top: 90px;
+    }
+
+    /* ===== MODAL ===== */
+    .gallery-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .gallery-grid img{
+      width:100%;
+      height: 170px;
+      object-fit:cover;
+      border-radius: 14px;
+      cursor:pointer;
+    }
+    @media (max-width: 992px){
+      .gallery-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 576px){
+      .gallery-grid{ grid-template-columns: 1fr; }
+      .gallery-grid img{ height: 200px; }
+    }
+
+    /* ===== MOBILE: giống Mioto (main trên, 3 ảnh dưới nằm ngang) ===== */
+    @media (max-width: 768px){
+      .mioto-gallery{
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-side{
+        flex-direction: row;
+      }
+
+      .side-item{
+        flex: 1;
+      }
+
+      .side-item::before{
+        aspect-ratio: 16 / 10;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <h1><a href="/index.html" style="color: inherit; text-decoration: none;">🚗 Car Rental</a></h1>
-            </div>
-            <div class="nav-menu">
-                <a href="/index.html" class="nav-link">Trang chủ</a>
-                <a href="/cars/cars.html" class="nav-link active">Xe cho thuê</a>
-            </div>
-            <div class="nav-auth" id="navAuth">
-                <a href="/auth/login.html" class="btn btn-outline">Đăng nhập</a>
-            </div>
-            <div class="nav-user" id="navUser" style="display: none;">
-                <a href="/profile/profile.html" class="user-name" id="userName"></a>
-                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-warning" href="/index.html">
+            <i class="fas fa-car-side me-2"></i>CAR RENTAL
+        </a>
+
+        <div id="navAuth">
+            <a href="/auth/login.html" class="btn btn-outline-dark btn-sm">Đăng nhập</a>
         </div>
-    </nav>
 
-    <!-- Car Detail Section -->
-    <section class="section">
-        <div class="container">
-            <a href="/cars/cars.html" class="back-link">← Quay lại danh sách</a>
-            
-            <div class="car-detail-container">
-                <!-- Car Images -->
-                <div class="car-images">
-                    <div class="main-image">
-                        <img id="mainImage" src="" alt="Car Image">
+        <div id="navUser" class="dropdown" style="display: none;">
+            <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <span id="userName">User</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><button class="dropdown-item text-danger" onclick="logout()">Đăng xuất</button></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <a href="/cars/cars.html" class="text-decoration-none text-secondary mb-3 d-inline-block">← Quay lại</a>
+
+        <!-- ===== GALLERY ===== -->
+        <div class="mioto-gallery">
+            <div class="gallery-main">
+                <img id="mainDisplay" src="" alt="Xe" />
+            </div>
+
+            <div class="gallery-side" id="sideContainer"></div>
+        </div>
+
+        <div class="row g-4">
+            <!-- LEFT -->
+            <div class="col-lg-8">
+                <div class="p-4 card-soft">
+                    <h3 id="carName" class="fw-bold mb-2">...</h3>
+
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <span class="status-badge"><span class="status-dot"></span>Đang rảnh</span>
                     </div>
-                </div>
 
-                <!-- Car Info -->
-                <div class="car-info-box">
-                    <h1 id="carName">Tên xe</h1>
-                    <div class="car-price">
+                    <div class="price-text text-primary mb-4">
                         <span id="carPrice">0</span> VNĐ/ngày
                     </div>
-                    
-                    <div class="car-specs">
-                        <div class="spec-item">
-                            <span class="spec-label">Hãng xe:</span>
-                            <span id="carBrand">-</span>
+
+                    <h5 class="fw-bold mb-3">Đặc điểm</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-4">
+                            <div class="spec-item">
+                                <i class="fas fa-car"></i>
+                                <div>Hãng: <span id="carBrand" class="value"></span></div>
+                            </div>
                         </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Năm sản xuất:</span>
-                            <span id="carYear">-</span>
+                        <div class="col-6 col-md-4">
+                            <div class="spec-item">
+                                <i class="fas fa-calendar"></i>
+                                <div>Năm: <span id="carYear" class="value"></span></div>
+                            </div>
                         </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Số chỗ:</span>
-                            <span id="carSeats">-</span>
+                        <div class="col-6 col-md-4">
+                            <div class="spec-item">
+                                <i class="fas fa-chair"></i>
+                                <div>Ghế: <span id="carSeats" class="value"></span></div>
+                            </div>
                         </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Truyền động:</span>
-                            <span id="carTransmission">-</span>
+                        <div class="col-6 col-md-4">
+                            <div class="spec-item">
+                                <i class="fas fa-cogs"></i>
+                                <div>Số: <span id="carTransmission" class="value"></span></div>
+                            </div>
                         </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Nhiên liệu:</span>
-                            <span id="carFuel">-</span>
-                        </div>
-                        <div class="spec-item">
-                            <span class="spec-label">Địa điểm:</span>
-                            <span id="carLocation">-</span>
+                        <div class="col-6 col-md-4">
+                            <div class="spec-item">
+                                <i class="fas fa-gas-pump"></i>
+                                <div>Nhiên liệu: <span id="carFuel" class="value"></span></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="car-description">
-                        <h3>Mô tả</h3>
-                        <p id="carDescription">Thông tin chi tiết về xe...</p>
-                    </div>
+                    <h5 class="fw-bold mb-2">Mô tả</h5>
+                    <p class="text-muted mb-0">Xe đời mới, nội thất sạch sẽ, bảo dưỡng định kỳ.</p>
+                </div>
+            </div>
 
-                    <button class="btn btn-primary btn-lg btn-block" onclick="bookCar()">
-                        Đặt xe ngay
-                    </button>
+            <!-- RIGHT -->
+            <div class="col-lg-4">
+                <div class="p-4 card-soft booking-card">
+                    <button class="btn btn-primary btn-lg w-100 fw-bold py-3" onclick="bookCar()">ĐẶT XE NGAY</button>
+                    <small class="d-block text-center text-muted mt-2">Hỗ trợ 24/7</small>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <script>
-        // Get car ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const carId = urlParams.get('id');
+<!-- ===== MODAL: Xem tất cả ảnh ===== -->
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 18px; overflow:hidden;">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Tất cả ảnh</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="galleryGrid" class="gallery-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // Check auth
-        const currentUser = localStorage.getItem('currentUser');
-        if (currentUser) {
-            document.getElementById('navAuth').style.display = 'none';
-            document.getElementById('navUser').style.display = 'flex';
-            const user = JSON.parse(currentUser);
-            document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const carId = urlParams.get("id");
+  const currentUserStr = localStorage.getItem("currentUser");
+
+  if (currentUserStr) {
+    document.getElementById("navAuth").style.display = "none";
+    document.getElementById("navUser").style.display = "block";
+    const user = JSON.parse(currentUserStr);
+    document.getElementById("userName").textContent = user.firstName || "User";
+  }
+
+  if (carId) loadCarDetail(carId);
+
+  function swapImage(src) {
+    document.getElementById("mainDisplay").src = src;
+  }
+
+  function openGalleryModal(images) {
+    const grid = document.getElementById("galleryGrid");
+    grid.innerHTML = "";
+
+    images.forEach((src) => {
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = "Ảnh xe";
+      img.onclick = () => {
+        swapImage(src);
+        bootstrap.Modal.getInstance(document.getElementById("galleryModal"))?.hide();
+      };
+      grid.appendChild(img);
+    });
+
+    new bootstrap.Modal(document.getElementById("galleryModal")).show();
+  }
+
+  async function loadCarDetail(id) {
+    try {
+      const res = await fetch(`/api/cars/${id}`, { credentials: "include" });
+      if (!res.ok) return;
+
+      const car = await res.json();
+
+      document.getElementById("carName").textContent = `${car.make} ${car.model}`;
+      document.getElementById("carPrice").textContent = new Intl.NumberFormat("vi-VN").format(car.amount);
+
+      document.getElementById("carBrand").textContent = car.make || "—";
+      document.getElementById("carYear").textContent = car.year || "—";
+      document.getElementById("carSeats").textContent = (car.seats || 5) + " chỗ";
+      document.getElementById("carTransmission").textContent = car.transmission || "Tự động";
+      document.getElementById("carFuel").textContent = car.fuel || "Xăng";
+
+      const mainDisplay = document.getElementById("mainDisplay");
+      const sideContainer = document.getElementById("sideContainer");
+      sideContainer.innerHTML = "";
+
+      const mainSrc = car.imageName || "https://via.placeholder.com/1200x800";
+      mainDisplay.src = mainSrc;
+
+      const gallery = Array.isArray(car.gallery) ? car.gallery : [];
+      const allImages = [mainSrc, ...gallery.filter(x => x && x !== mainSrc)];
+
+      mainDisplay.onclick = () => openGalleryModal(allImages);
+
+      // lấy ảnh bên phải từ gallery (bỏ main)
+      const sideImages = allImages.slice(1);
+      const slotsToShow = 3;
+
+      for (let i = 0; i < slotsToShow; i++) {
+        let imgUrl = sideImages[i] || mainSrc;
+        let isMore = false;
+        let remaining = 0;
+
+        if (i === slotsToShow - 1 && sideImages.length > slotsToShow) {
+          isMore = true;
+          remaining = sideImages.length - slotsToShow + 1;
         }
 
-        // Load car details
-        if (carId) {
-            loadCarDetail(carId);
-        } else {
-            alert('Không tìm thấy thông tin xe');
-            window.location.href = '/cars/cars.html';
+        const div = document.createElement("div");
+        div.className = "side-item";
+
+        div.onclick = function () {
+          if (i === slotsToShow - 1) openGalleryModal(allImages);
+          else swapImage(imgUrl);
+        };
+
+        let html = `<img src="${imgUrl}" alt="Sub">`;
+
+        if (isMore) html += `<div class="more-photos">+${remaining}</div>`;
+
+        if (i === slotsToShow - 1) {
+          html += `
+            <div class="view-all-btn">
+              <i class="fa-regular fa-images"></i>
+              Xem tất cả ảnh
+            </div>
+          `;
         }
 
-        async function loadCarDetail(id) {
-            try {
-                const response = await fetch(`/api/cars/${id}`, { credentials: 'include' });
-                
-                if (response.ok) {
-                    const car = await response.json();
-                    
-                    document.getElementById('carName').textContent = `${car.make} ${car.model}`;
-                    document.getElementById('carPrice').textContent = car.amount.toLocaleString();
-                    document.getElementById('carBrand').textContent = car.make;
-                    document.getElementById('carYear').textContent = car.year;
-                    document.getElementById('carSeats').textContent = (car.seats || 5) + ' chỗ';
-                    document.getElementById('carTransmission').textContent = car.transmission || 'Tự động';
-                    document.getElementById('carFuel').textContent = car.fuel || 'Xăng';
-                    document.getElementById('carLocation').textContent = car.location;
-                    document.getElementById('carDescription').textContent = 'Xe chất lượng cao, bảo dưỡng định kỳ, phù hợp cho mọi nhu cầu di chuyển.';
-                    document.getElementById('mainImage').src = car.imageName || 'https://via.placeholder.com/600x400?text=' + car.make;
-                    document.getElementById('mainImage').alt = `${car.make} ${car.model}`;
-                } else {
-                    // Fallback to mock data
-                    const mockCar = {
-                        id: id,
-                        name: 'Toyota Camry 2024',
-                        brand: 'Toyota',
-                        year: 2024,
-                        price: 800000,
-                        seats: 5,
-                        transmission: 'Tự động',
-                        fuel: 'Xăng',
-                        location: 'Hồ Chí Minh',
-                        image: 'https://via.placeholder.com/600x400?text=Toyota+Camry',
-                        description: 'Xe sedan hạng trung, tiện nghi, phù hợp cho gia đình và công tác.'
-                    };
+        div.innerHTML = html;
+        sideContainer.appendChild(div);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-                    document.getElementById('carName').textContent = mockCar.name;
-                    document.getElementById('carPrice').textContent = mockCar.price.toLocaleString();
-                    document.getElementById('carBrand').textContent = mockCar.brand;
-                    document.getElementById('carYear').textContent = mockCar.year;
-                    document.getElementById('carSeats').textContent = mockCar.seats + ' chỗ';
-                    document.getElementById('carTransmission').textContent = mockCar.transmission;
-                    document.getElementById('carFuel').textContent = mockCar.fuel;
-                    document.getElementById('carLocation').textContent = mockCar.location;
-                    document.getElementById('carDescription').textContent = mockCar.description;
-                    document.getElementById('mainImage').src = mockCar.image;
-                    document.getElementById('mainImage').alt = mockCar.name;
-                }
-            } catch (error) {
-                console.error('Error loading car:', error);
-                alert('Không thể tải thông tin xe');
-            }
-        }
+  function bookCar() {
+    if (!currentUserStr) window.location.href = "/auth/login.html";
+    else window.location.href = `/cars/booking.html?carId=${carId}`;
+  }
 
-        function bookCar() {
-            if (!currentUser) {
-                alert('Vui lòng đăng nhập để đặt xe');
-                window.location.href = '/auth/login.html';
-                return;
-            }
-            window.location.href = '/cars/booking.html?carId=' + carId;
-        }
-
-        function logout() {
-            fetch('/api/auth/logout', { credentials: 'include' })
-                .finally(() => {
-                    localStorage.removeItem('currentUser');
-                    window.location.href = '/index.html';
-                });
-        }
-    </script>
+  function logout() {
+    localStorage.removeItem("currentUser");
+    window.location.href = "/index.html";
+  }
+</script>
 </body>
 </html>

@@ -2,8 +2,10 @@ package com.carrental.config.core.services;
 
 import com.carrental.config.core.dtos.*;
 import com.carrental.config.core.entities.ApplicationUser;
+import com.carrental.config.core.entities.Role;
 import com.carrental.config.core.interfaces.IEmailConfirmationService;
 import com.carrental.config.core.interfaces.ICountryService;
+import com.carrental.config.core.repositories.RoleRepository;
 import com.carrental.config.core.repositories.UserRepository;
 import com.carrental.config.core.shared.DomainErrors;
 import com.carrental.config.core.shared.Error;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ import java.util.Set;
  * Dịch vụ xử lý logic nghiệp vụ liên quan đến người dùng.
  */
 @Service
-public class UserService {
+public class  UserService {
 
     public final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -31,17 +32,20 @@ public class UserService {
     private final IEmailConfirmationService emailConfirmationService;
     private final ICountryService countryService;
 
+    private final RoleRepository roleRepository;
+
     private void publishNotification(UserNotification notification) {
         System.out.println("NOTIFICATION [" + notification.getType() + "]: " + notification.getMessage());
     }
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper,
-                       IEmailConfirmationService emailConfirmationService, ICountryService countryService) {
+                       IEmailConfirmationService emailConfirmationService, ICountryService countryService, RoleRepository repository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.emailConfirmationService = emailConfirmationService;
         this.countryService = countryService;
+        this.roleRepository = repository;
     }
 
     @Transactional
@@ -68,7 +72,16 @@ public class UserService {
         user.setDriversLicenseNumber("");
         
         // Set role as transient (will be managed separately if needed)
-        user.setRoles(Collections.singleton("Client"));
+        // Lấy role "Client" từ DB
+        Role clientRole = roleRepository.findByName("Client")
+                .orElseThrow(() -> new RuntimeException("Role 'Client' not found in database"));
+
+// gắn vào quan hệ ManyToMany
+        user.getRoleEntities().add(clientRole);
+
+// đồng bộ set roles transient để getAuthorities() dùng
+        user.setRoles(Set.of("Client"));
+
 
         try {
             userRepository.save(user);
@@ -105,7 +118,19 @@ public class UserService {
         user.setDriversLicenseNumber("");
         
         // Set admin role
+        Role clientRole = roleRepository.findByName("Client")
+                .orElseThrow(() -> new RuntimeException("Role 'Client' not found in database"));
+
+        Role adminRole = roleRepository.findByName("Admin")
+                .orElseThrow(() -> new RuntimeException("Role 'Admin' not found in database"));
+
+// Gắn vào bảng UserRoles
+        user.getRoleEntities().add(clientRole);
+        user.getRoleEntities().add(adminRole);
+
+// Đồng bộ transient roles
         user.setRoles(Set.of("Client", "Admin"));
+
 
         try {
             userRepository.save(user);

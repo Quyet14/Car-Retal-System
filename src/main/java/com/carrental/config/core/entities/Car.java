@@ -51,7 +51,7 @@ public class Car {
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Reservation> reservations = new HashSet<>();
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    //@com.fasterxml.jackson.annotation.JsonIgnore
     private Set<CarImage> images = new HashSet<>();
 }

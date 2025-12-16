@@ -1,5 +1,6 @@
 package com.carrental.config.controllers;
 
+import com.carrental.config.core.entities.CarImage;
 import com.carrental.config.core.dtos.CarResponse;
 import com.carrental.config.core.entities.Car;
 import com.carrental.config.core.repositories.CarRepository;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,6 +68,14 @@ public class CarController {
     }
 
     private CarResponse mapToResponse(Car car) {
+        // Lấy danh sách link ảnh
+        List<String> galleryLinks = new ArrayList<>();
+        if (car.getImages() != null) {
+            galleryLinks = car.getImages().stream()
+                    .map(CarImage::getLink) // Lấy trường link của CarImage
+                    .collect(Collectors.toList());
+        }
+
         return CarResponse.builder()
                 .id(car.getId())
                 .make(car.getMake().getName())
@@ -74,9 +84,13 @@ public class CarController {
                 .location(car.getLocation().getName())
                 .amount(car.getAmount())
                 .imageName(car.getImageName())
-                .seats(5) // Default value
-                .transmission("Tự động") // Default value
-                .fuel("Xăng") // Default value
+
+                // --- THÊM DÒNG NÀY ---
+                .gallery(galleryLinks)
+
+                .seats(5)
+                .transmission("Tự động")
+                .fuel("Xăng")
                 .build();
     }
 }
