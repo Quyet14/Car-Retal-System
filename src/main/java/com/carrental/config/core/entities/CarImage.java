@@ -6,21 +6,21 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-/**
- * Đại diện cho hình ảnh xe.
- */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @Entity
-@Table(name = "car_images")
+// 1. Sửa tên bảng khớp với DB (CarImages)
+@Table(name = "CarImages")
 public class CarImage extends GenericEntity {
 
-    @Column(name = "link", nullable = false)
-    private String link; 
+    // 2. Sửa tên cột khớp với DB (Link)
+    @Column(name = "Link", nullable = false)
+    private String link;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_id", nullable = false)
+    // 3. Sửa tên cột khóa ngoại khớp với DB (CarId)
+    @JoinColumn(name = "CarId", nullable = false)
     private Car car;
 }

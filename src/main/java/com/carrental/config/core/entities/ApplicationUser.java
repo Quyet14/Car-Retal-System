@@ -93,8 +93,23 @@ public class ApplicationUser implements UserDetails {
     @Column(name = "DateOfBirth")
     private java.time.LocalDateTime dateOfBirth;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "UserRoles",
+            joinColumns = @JoinColumn(name = "UserId"),
+            inverseJoinColumns = @JoinColumn(name = "RoleId")
+    )
+    private Set<Role> roleEntities = new HashSet<>();
+
     @Transient
     private Set<String> roles = new HashSet<>();
+
+    @PostLoad
+    public void loadRolesFromEntities() {
+        this.roles = roleEntities.stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

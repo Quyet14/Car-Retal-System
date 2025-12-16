@@ -11,120 +11,111 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
 });
 
+// 1. AUTH & INIT
 function checkAdminAuth() {
     const user = localStorage.getItem('currentUser');
     if (!user) {
-        alert('Vui lòng đăng nhập để truy cập trang này');
         window.location.href = '/auth/login.html';
         return;
     }
-    
     const userData = JSON.parse(user);
-    
-    // Check if user has Admin role
     if (!userData.roles || !userData.roles.includes('Admin')) {
-        alert('Bạn không có quyền truy cập trang này');
+        alert('Không có quyền truy cập');
         window.location.href = '/index.html';
         return;
     }
-    
-    document.getElementById('adminName').textContent = `${userData.firstName} ${userData.lastName}`;
+    document.getElementById('adminName').textContent = userData.firstName || 'Admin';
 }
 
 async function loadBrandsAndLocations() {
+    // Giữ nguyên logic cũ của bạn (Fetch hoặc Mock data)
     try {
-        // Load brands from API
-        const brandsResponse = await fetch('/api/admin/brands', { credentials: 'include' });
-        if (brandsResponse.ok) {
-            const brandsData = await brandsResponse.json();
-            brands = brandsData.map(b => b.name);
+        const brandsRes = await fetch('/api/admin/brands', {credentials: 'include'});
+        if(brandsRes.ok) {
+            const data = await brandsRes.json();
+            brands = data.map(b => b.name);
         }
-        
-        // Load locations from API
-        const locationsResponse = await fetch('/api/admin/locations', { credentials: 'include' });
-        if (locationsResponse.ok) {
-            const locationsData = await locationsResponse.json();
-            locations = locationsData.map(l => l.name);
+        const locRes = await fetch('/api/admin/locations', {credentials: 'include'});
+        if(locRes.ok) {
+             const data = await locRes.json();
+             locations = data.map(l => l.name);
         }
-    } catch (error) {
-        console.error('Error loading brands/locations:', error);
-        // Fallback to some default values
-        brands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes-Benz', 'Audi'];
-        locations = ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Cần Thơ'];
-    }
-    
-    // Populate selects
+    } catch(e) { console.error(e); }
+
+    // Fallback data nếu API lỗi
+    if(brands.length === 0) brands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes'];
+    if(locations.length === 0) locations = ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng'];
+
+    populateSelects();
+}
+
+function populateSelects() {
     const makeSelect = document.getElementById('carMake');
     const locationSelect = document.getElementById('carLocation');
     const filterBrand = document.getElementById('filterBrand');
     const filterLocation = document.getElementById('filterLocation');
-    
-    brands.forEach(brand => {
-        makeSelect.innerHTML += `<option value="${brand}">${brand}</option>`;
-        filterBrand.innerHTML += `<option value="${brand}">${brand}</option>`;
-    });
-    
-    locations.forEach(loc => {
-        locationSelect.innerHTML += `<option value="${loc}">${loc}</option>`;
-        filterLocation.innerHTML += `<option value="${loc}">${loc}</option>`;
-    });
+
+    if(makeSelect) {
+        makeSelect.innerHTML = '<option value="">Chọn hãng</option>';
+        brands.forEach(b => makeSelect.innerHTML += `<option value="${b}">${b}</option>`);
+    }
+    if(filterBrand) {
+        filterBrand.innerHTML = '<option value="">Tất cả hãng</option>';
+        brands.forEach(b => filterBrand.innerHTML += `<option value="${b}">${b}</option>`);
+    }
+
+    if(locationSelect) {
+        locationSelect.innerHTML = '<option value="">Chọn địa điểm</option>';
+        locations.forEach(l => locationSelect.innerHTML += `<option value="${l}">${l}</option>`);
+    }
+    if(filterLocation) {
+        filterLocation.innerHTML = '<option value="">Tất cả địa điểm</option>';
+        locations.forEach(l => filterLocation.innerHTML += `<option value="${l}">${l}</option>`);
+    }
 }
 
+// 2. LOAD CARS
 async function loadCars() {
     const container = document.getElementById('carsTable');
     container.innerHTML = '<div class="loading">Đang tải...</div>';
-    
     try {
         const response = await fetch('/api/cars', { credentials: 'include' });
-        
-        if (!response.ok) {
-            container.innerHTML = '<p class="empty-state">Không thể tải dữ liệu</p>';
-            return;
+        if (response.ok) {
+            allCars = await response.json();
+            displayCars(allCars);
+        } else {
+            container.innerHTML = '<p class="empty-state">Lỗi tải dữ liệu</p>';
         }
-
-        allCars = await response.json();
-        displayCars(allCars);
     } catch (error) {
-        console.error('Error loading cars:', error);
-        container.innerHTML = '<p class="empty-state">Có lỗi xảy ra</p>';
+        console.error(error);
+        container.innerHTML = '<p class="empty-state">Không thể kết nối Server</p>';
     }
 }
 
 function displayCars(cars) {
     const container = document.getElementById('carsTable');
-    
     if (cars.length === 0) {
         container.innerHTML = '<p class="empty-state">Chưa có xe nào</p>';
         return;
     }
-    
     container.innerHTML = `
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Hình ảnh</th>
-                    <th>Hãng</th>
-                    <th>Model</th>
-                    <th>Năm</th>
-                    <th>Địa điểm</th>
-                    <th>Giá/ngày</th>
-                    <th>Thao tác</th>
+                    <th>ID</th><th>Ảnh</th><th>Hãng & Tên</th><th>Năm</th><th>Giá/ngày</th><th>Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 ${cars.map(car => `
                     <tr>
                         <td>${car.id}</td>
-                        <td><img src="${car.imageName || 'https://via.placeholder.com/60x40'}" alt="${car.make?.name || car.make}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;"></td>
-                        <td>${car.make?.name || car.make}</td>
-                        <td>${car.model}</td>
+                        <td><img src="${car.imageName || ''}" style="width:60px; height:40px; object-fit:cover; border-radius:4px;"></td>
+                        <td>${car.make?.name || car.make} <br> <small>${car.model}</small></td>
                         <td>${car.year}</td>
-                        <td>${car.location?.name || car.location}</td>
-                        <td>${formatPrice(car.amount)}</td>
+                        <td>${new Intl.NumberFormat('vi-VN').format(car.amount)}</td>
                         <td class="actions">
-                            <button class="btn-icon btn-edit" onclick="editCar(${car.id})" title="Sửa">✏️</button>
-                            <button class="btn-icon btn-delete" onclick="deleteCar(${car.id})" title="Xóa">🗑️</button>
+                            <button class="btn-icon" onclick="editCar(${car.id})">✏️</button>
+                            <button class="btn-icon" onclick="deleteCar(${car.id})">🗑️</button>
                         </td>
                     </tr>
                 `).join('')}
@@ -133,6 +124,7 @@ function displayCars(cars) {
     `;
 }
 
+// 3. FILTERING
 function setupFilters() {
     document.getElementById('searchCar').addEventListener('input', filterCars);
     document.getElementById('filterLocation').addEventListener('change', filterCars);
@@ -141,34 +133,36 @@ function setupFilters() {
 
 function filterCars() {
     const search = document.getElementById('searchCar').value.toLowerCase();
-    const location = document.getElementById('filterLocation').value;
+    const loc = document.getElementById('filterLocation').value;
     const brand = document.getElementById('filterBrand').value;
-    
-    let filtered = allCars.filter(car => {
-        const makeName = car.make?.name || car.make;
-        const locationName = car.location?.name || car.location;
-        const matchSearch = makeName.toLowerCase().includes(search) || 
-                          car.model.toLowerCase().includes(search);
-        const matchLocation = !location || locationName === location;
-        const matchBrand = !brand || makeName === brand;
-        
-        return matchSearch && matchLocation && matchBrand;
+
+    const filtered = allCars.filter(c => {
+        const m = (c.make?.name || c.make).toLowerCase();
+        return (m.includes(search) || c.model.toLowerCase().includes(search)) &&
+               (!loc || (c.location?.name || c.location) === loc) &&
+               (!brand || (c.make?.name || c.make) === brand);
     });
-    
     displayCars(filtered);
 }
 
+// 4. MODAL ACTIONS
 function showAddCarModal() {
     document.getElementById('modalTitle').textContent = 'Thêm xe mới';
     document.getElementById('carForm').reset();
     document.getElementById('carId').value = '';
+
+    // Reset inputs file
+    document.getElementById('imageFile').value = '';
+    document.getElementById('galleryFiles').value = '';
+
+    document.getElementById('carMessage').textContent = '';
     document.getElementById('carModal').style.display = 'block';
 }
 
 function editCar(id) {
     const car = allCars.find(c => c.id === id);
     if (!car) return;
-    
+
     document.getElementById('modalTitle').textContent = 'Sửa thông tin xe';
     document.getElementById('carId').value = car.id;
     document.getElementById('carMake').value = car.make?.name || car.make;
@@ -176,107 +170,98 @@ function editCar(id) {
     document.getElementById('carYear').value = car.year;
     document.getElementById('carAmount').value = car.amount;
     document.getElementById('carLocation').value = car.location?.name || car.location;
-    document.getElementById('carImage').value = car.imageName || '';
-    document.getElementById('carModal').style.display = 'block';
-}
+    document.getElementById('imageUrl').value = car.imageName || '';
 
-async function deleteCar(id) {
-    if (!confirm('Bạn có chắc muốn xóa xe này?')) return;
-    
-    try {
-        const response = await fetch(`/api/admin/cars/${id}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-        
-        if (response.ok) {
-            alert('Đã xóa xe thành công');
-            loadCars();
-        } else {
-            const error = await response.text();
-            alert('Không thể xóa xe: ' + error);
-        }
-    } catch (error) {
-        console.error('Error deleting car:', error);
-        alert('Có lỗi xảy ra');
-    }
+    // Reset inputs file (vì lý do bảo mật không set value file được)
+    document.getElementById('imageFile').value = '';
+    document.getElementById('galleryFiles').value = '';
+
+    document.getElementById('carMessage').textContent = '';
+    document.getElementById('carModal').style.display = 'block';
 }
 
 function closeCarModal() {
     document.getElementById('carModal').style.display = 'none';
 }
 
-// Handle form submit
+// 5. SUBMIT FORM (CREATE / UPDATE)
 document.getElementById('carForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const messageEl = document.getElementById('carMessage');
     const carId = document.getElementById('carId').value;
-    
-    const data = {
-        make: document.getElementById('carMake').value,
-        model: document.getElementById('carModel').value,
-        year: parseInt(document.getElementById('carYear').value),
-        location: document.getElementById('carLocation').value,
-        amount: parseFloat(document.getElementById('carAmount').value),
-        imageName: document.getElementById('carImage').value
-    };
-    
+    const url = carId ? `/api/admin/cars/${carId}` : '/api/admin/cars';
+    const method = carId ? 'PUT' : 'POST';
+
+    const formData = new FormData();
+    formData.append('make', document.getElementById('carMake').value);
+    formData.append('model', document.getElementById('carModel').value);
+    formData.append('year', document.getElementById('carYear').value);
+    formData.append('amount', document.getElementById('carAmount').value);
+    formData.append('location', document.getElementById('carLocation').value);
+
+    // 1. Ảnh đại diện
+    const fileInput = document.getElementById('imageFile');
+    const imageUrl = document.getElementById('imageUrl').value;
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    } else if (imageUrl) {
+        formData.append('imageName', imageUrl);
+    }
+
+    // 2. Ảnh Gallery (MỚI)
+    const galleryInput = document.getElementById('galleryFiles');
+    if (galleryInput && galleryInput.files.length > 0) {
+        for (let i = 0; i < galleryInput.files.length; i++) {
+            formData.append('gallery', galleryInput.files[i]);
+        }
+    }
+
     messageEl.textContent = 'Đang xử lý...';
-    messageEl.className = 'message info-message';
-    
+    messageEl.className = 'message';
+
     try {
-        const url = carId ? `/api/admin/cars/${carId}` : '/api/admin/cars';
-        const method = carId ? 'PUT' : 'POST';
-        
         const response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
             credentials: 'include',
-            body: JSON.stringify(data)
+            body: formData
         });
-        
-        const result = await response.text();
-        
+
         if (response.ok) {
-            messageEl.textContent = result;
-            messageEl.className = 'message success-message';
+            messageEl.textContent = 'Thành công!';
+            messageEl.style.color = 'green';
             setTimeout(() => {
                 closeCarModal();
                 loadCars();
-            }, 2000);
+            }, 1000);
         } else {
-            messageEl.textContent = result;
-            messageEl.className = 'message error-message';
+            const txt = await response.text();
+            messageEl.textContent = 'Lỗi: ' + txt;
+            messageEl.style.color = 'red';
         }
     } catch (error) {
-        console.error('Error saving car:', error);
-        messageEl.textContent = 'Có lỗi xảy ra: ' + error.message;
-        messageEl.className = 'message error-message';
+        console.error(error);
+        messageEl.textContent = 'Lỗi kết nối server';
+        messageEl.style.color = 'red';
     }
 });
 
-function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(price);
+// 6. DELETE
+async function deleteCar(id) {
+    if (!confirm('Bạn có chắc muốn xóa?')) return;
+    try {
+        const res = await fetch(`/api/admin/cars/${id}`, {method: 'DELETE', credentials: 'include'});
+        if(res.ok) loadCars();
+        else alert('Lỗi xóa xe');
+    } catch(e) { console.error(e); }
 }
 
 function logout() {
-    fetch('/api/auth/logout', { credentials: 'include' })
-        .finally(() => {
-            localStorage.removeItem('currentUser');
-            window.location.href = '/index.html';
-        });
+    localStorage.removeItem('currentUser');
+    window.location.href = '/index.html';
 }
 
-// Close modal when clicking outside
-window.onclick = function(event) {
+window.onclick = function (event) {
     const modal = document.getElementById('carModal');
-    if (event.target === modal) {
-        closeCarModal();
-    }
-}
+    if (event.target === modal) closeCarModal();
+};

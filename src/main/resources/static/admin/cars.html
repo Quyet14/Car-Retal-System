@@ -8,96 +8,91 @@
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
-    <nav class="admin-navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <h1>🚗 Admin Panel</h1>
-            </div>
-            <div class="nav-menu">
-                <a href="/admin/dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/admin/cars.html" class="nav-link active">Quản lý xe</a>
-                <a href="/admin/reservations.html" class="nav-link">Đơn thuê xe</a>
-                <a href="/admin/users.html" class="nav-link">Người dùng</a>
-            </div>
-            <div class="nav-user">
-                <span class="user-name" id="adminName">Admin</span>
-                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
-            </div>
+<nav class="admin-navbar">
+    <div class="container">
+        <div class="nav-brand"><h1>🚗 Admin Panel</h1></div>
+        <div class="nav-menu">
+            <a href="/admin/dashboard.html" class="nav-link">Dashboard</a>
+            <a href="/admin/cars.html" class="nav-link active">Quản lý xe</a>
+            <a href="/admin/reservations.html" class="nav-link">Đơn thuê xe</a>
         </div>
-    </nav>
-
-    <section class="admin-section">
-        <div class="container">
-            <div class="admin-header">
-                <h1>Quản lý xe</h1>
-                <button class="btn btn-primary" onclick="showAddCarModal()">+ Thêm xe mới</button>
-            </div>
-
-            <!-- Filters -->
-            <div class="admin-filters">
-                <input type="text" id="searchCar" placeholder="Tìm kiếm xe..." class="form-input">
-                <select id="filterLocation" class="form-input">
-                    <option value="">Tất cả địa điểm</option>
-                </select>
-                <select id="filterBrand" class="form-input">
-                    <option value="">Tất cả hãng</option>
-                </select>
-            </div>
-
-            <!-- Cars Table -->
-            <div class="admin-card">
-                <div id="carsTable" class="table-container">
-                    <div class="loading">Đang tải...</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Add/Edit Car Modal -->
-    <div id="carModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeCarModal()">&times;</span>
-            <h2 id="modalTitle">Thêm xe mới</h2>
-            <form id="carForm">
-                <input type="hidden" id="carId">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Hãng xe *</label>
-                        <select id="carMake" class="form-input" required>
-                            <option value="">Chọn hãng</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Model *</label>
-                        <input type="text" id="carModel" class="form-input" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Năm sản xuất *</label>
-                        <input type="number" id="carYear" class="form-input" min="2000" max="2025" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Giá thuê (VNĐ/ngày) *</label>
-                        <input type="number" id="carAmount" class="form-input" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Địa điểm *</label>
-                    <select id="carLocation" class="form-input" required>
-                        <option value="">Chọn địa điểm</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Hình ảnh URL</label>
-                    <input type="text" id="carImage" class="form-input">
-                </div>
-                <div id="carMessage" class="message"></div>
-                <button type="submit" class="btn btn-primary btn-block">Lưu</button>
-            </form>
+        <div class="nav-user">
+            <span class="user-name" id="adminName">Admin</span>
+            <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
         </div>
     </div>
+</nav>
 
-    <script src="/js/admin-cars.js"></script>
+<section class="admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1>Quản lý xe</h1>
+            <button class="btn btn-primary" onclick="showAddCarModal()">+ Thêm xe mới</button>
+        </div>
+
+        <div class="admin-filters">
+            <input type="text" id="searchCar" placeholder="Tìm kiếm xe..." class="form-input">
+            <select id="filterLocation" class="form-input"><option value="">Tất cả địa điểm</option></select>
+            <select id="filterBrand" class="form-input"><option value="">Tất cả hãng</option></select>
+        </div>
+
+        <div class="admin-card">
+            <div id="carsTable" class="table-container">
+                <div class="loading">Đang tải...</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="carModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCarModal()">&times;</span>
+        <h2 id="modalTitle">Thêm xe mới</h2>
+        <form id="carForm">
+            <input type="hidden" id="carId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Hãng xe *</label>
+                    <select id="carMake" class="form-input" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Model *</label>
+                    <input type="text" id="carModel" class="form-input" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Năm *</label>
+                    <input type="number" id="carYear" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Giá thuê *</label>
+                    <input type="number" id="carAmount" class="form-input" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Địa điểm *</label>
+                <select id="carLocation" class="form-input" required></select>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <label style="font-weight: bold;">1. Ảnh đại diện (Thumbnail)</label>
+                <input type="file" id="imageFile" accept="image/*" class="form-input">
+                <input type="hidden" id="imageUrl">
+            </div>
+
+            <div class="form-group">
+                <label style="font-weight: bold; color: #f5a623;">2. Bộ sưu tập ảnh (Gallery)</label>
+                <input type="file" id="galleryFiles" accept="image/*" multiple class="form-input">
+                <small style="color: #666; font-size: 0.85em;">Giữ phím Ctrl để chọn nhiều ảnh.</small>
+            </div>
+
+            <div id="carMessage" class="message"></div>
+            <button type="submit" class="btn btn-primary btn-block">Lưu thông tin</button>
+        </form>
+    </div>
+</div>
+
+<script src="/js/admin-cars.js"></script>
 </body>
 </html>

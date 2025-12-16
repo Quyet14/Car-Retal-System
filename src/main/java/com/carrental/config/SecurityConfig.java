@@ -118,6 +118,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/logout").authenticated()
                 .requestMatchers("/api/auth/profile").permitAll() // Temporary for debugging
                 // Tất cả các request khác cho phép truy cập
+                    .requestMatchers("/auth/**").permitAll()
                 .anyRequest().permitAll()
             )
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
