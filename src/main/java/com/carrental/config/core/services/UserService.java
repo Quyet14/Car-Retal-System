@@ -31,7 +31,6 @@ public class  UserService {
     private final UserMapper userMapper;
     private final IEmailConfirmationService emailConfirmationService;
     private final ICountryService countryService;
-
     private final RoleRepository roleRepository;
 
     private void publishNotification(UserNotification notification) {
