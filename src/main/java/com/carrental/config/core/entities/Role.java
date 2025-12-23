@@ -27,8 +27,6 @@ public class Role {
     public Role() {
     }
 
-    // ===== Getter / Setter =====
-
     public String getId() {
         return id;
     }
