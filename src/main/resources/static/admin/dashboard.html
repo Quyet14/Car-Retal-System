@@ -12,12 +12,12 @@
     <nav class="admin-navbar">
         <div class="container">
             <div class="nav-brand">
-                <h1>🚗 Admin Panel</h1>
+                <h1>Quản lý xe</h1>
             </div>
             <div class="nav-menu">
-                <a href="/admin/dashboard.html" class="nav-link active">Dashboard</a>
-                <a href="/admin/cars.html" class="nav-link">Quản lý xe</a>
-                <a href="/admin/reservations.html" class="nav-link">Đơn thuê xe</a>
+                <a href="/admin/dashboard.html" class="nav-link active">Tổng quan</a>
+                <a href="/admin/cars.html" class="nav-link">Xe</a>
+                <a href="/admin/reservations.html" class="nav-link">Đơn thuê</a>
                 <a href="/admin/users.html" class="nav-link">Người dùng</a>
             </div>
             <div class="nav-user">
@@ -30,33 +30,29 @@
     <!-- Dashboard Content -->
     <section class="admin-section">
         <div class="container">
-            <h1>Dashboard</h1>
+            <h1>Tổng quan</h1>
             
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon">🚗</div>
                     <div class="stat-info">
                         <h3 id="totalCars">0</h3>
                         <p>Tổng số xe</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">📋</div>
                     <div class="stat-info">
                         <h3 id="totalReservations">0</h3>
                         <p>Đơn thuê xe</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">👥</div>
                     <div class="stat-info">
                         <h3 id="totalUsers">0</h3>
                         <p>Người dùng</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">💰</div>
                     <div class="stat-info">
                         <h3 id="totalRevenue">0 VNĐ</h3>
                         <p>Doanh thu</p>
@@ -66,7 +62,7 @@
 
             <!-- Recent Reservations -->
             <div class="admin-card">
-                <h2>Đơn thuê xe gần đây</h2>
+                <h2>Đơn thuê gần đây</h2>
                 <div id="recentReservations" class="table-container">
                     <div class="loading">Đang tải...</div>
                 </div>

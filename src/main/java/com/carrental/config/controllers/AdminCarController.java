@@ -187,7 +187,7 @@ public class AdminCarController {
     }
 
     // ============================
-    // DELETE CAR
+    // DELETE CAR (HARD DELETE - tạm thời)
     // ============================
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCar(@PathVariable Integer id) {

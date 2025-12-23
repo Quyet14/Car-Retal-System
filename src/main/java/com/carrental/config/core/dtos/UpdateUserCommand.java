@@ -12,6 +12,8 @@ public class UpdateUserCommand {
     private String email;
 
     private String password;
+    
+    private String currentPassword; // Mật khẩu hiện tại để xác thực
 
     @NotBlank(message = "First name is required")
     private String firstName;

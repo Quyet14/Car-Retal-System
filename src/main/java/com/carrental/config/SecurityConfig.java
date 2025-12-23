@@ -101,6 +101,7 @@ public class SecurityConfig {
                     "/css/**",
                     "/js/**",
                     "/images/**",
+                    "/uploads/**",
                     "/admin/**"
                 ).permitAll()
                 // Các endpoint của Admin - yêu cầu role ADMIN

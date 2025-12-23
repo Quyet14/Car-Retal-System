@@ -373,11 +373,22 @@
       const sideContainer = document.getElementById("sideContainer");
       sideContainer.innerHTML = "";
 
-      const mainSrc = car.imageName || "https://via.placeholder.com/1200x800";
+      // Fix image path: add /uploads/ if missing
+      let mainSrc = car.imageName || "https://via.placeholder.com/1200x800";
+      if (mainSrc && !mainSrc.startsWith('/') && !mainSrc.startsWith('http')) {
+        mainSrc = '/uploads/' + mainSrc;
+      }
       mainDisplay.src = mainSrc;
 
+      // Fix gallery paths too
       const gallery = Array.isArray(car.gallery) ? car.gallery : [];
-      const allImages = [mainSrc, ...gallery.filter(x => x && x !== mainSrc)];
+      const fixedGallery = gallery.map(link => {
+        if (link && !link.startsWith('/') && !link.startsWith('http')) {
+          return '/uploads/' + link;
+        }
+        return link;
+      });
+      const allImages = [mainSrc, ...fixedGallery.filter(x => x && x !== mainSrc)];
 
       mainDisplay.onclick = () => openGalleryModal(allImages);
 

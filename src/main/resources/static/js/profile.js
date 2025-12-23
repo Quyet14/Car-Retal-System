@@ -125,6 +125,7 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
             firstName: currentUser.firstName,
             lastName: currentUser.lastName,
             country: currentUser.country,
+            currentPassword: currentPassword, // Gửi mật khẩu hiện tại
             password: newPassword
         };
 
@@ -142,7 +143,8 @@ document.getElementById('passwordForm').addEventListener('submit', async (e) => 
             localStorage.removeItem('currentUser');
             window.location.href = '/auth/login.html';
         } else {
-            alert('Đổi mật khẩu thất bại');
+            const error = await response.text();
+            alert('Đổi mật khẩu thất bại: ' + error);
         }
     } catch (error) {
         console.error('Change password error:', error);

@@ -143,13 +143,24 @@ function displayCars() {
     }
 
     carsGrid.innerHTML = carsToShow.map(car => {
+        // Fix image path: add /uploads/ if missing
+        let mainImg = car.imageName || 'https://via.placeholder.com/300x200?text=No+Image';
+        if (mainImg && !mainImg.startsWith('/') && !mainImg.startsWith('http')) {
+            mainImg = '/uploads/' + mainImg;
+        }
+
         // [MỚI] Xử lý hiển thị Gallery nhỏ
         let galleryHtml = '';
         if (car.gallery && car.gallery.length > 0) {
             galleryHtml = `<div class="d-flex gap-1 mt-2 overflow-hidden" style="height: 35px;">`;
             // Lấy tối đa 4 ảnh đầu tiên để hiển thị
             car.gallery.slice(0, 4).forEach(link => {
-                galleryHtml += `<img src="${link}" class="rounded border" style="width: 45px; height: 100%; object-fit: cover;">`;
+                // Fix gallery image path too
+                let galleryImg = link;
+                if (galleryImg && !galleryImg.startsWith('/') && !galleryImg.startsWith('http')) {
+                    galleryImg = '/uploads/' + galleryImg;
+                }
+                galleryHtml += `<img src="${galleryImg}" class="rounded border" style="width: 45px; height: 100%; object-fit: cover;">`;
             });
             // Nếu còn nhiều ảnh hơn thì hiện số lượng
             if(car.gallery.length > 4) {
@@ -162,7 +173,7 @@ function displayCars() {
         <div class="col-md-6 col-lg-4">
             <div class="car-card h-100 shadow-sm border-0" onclick="showCarDetail(${car.id})" style="cursor: pointer; transition: transform 0.2s;">
                 <div class="car-img-wrapper position-relative" style="height: 200px; overflow: hidden; border-radius: 12px 12px 0 0;">
-                    <img src="${car.imageName}" alt="${car.make}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="${mainImg}" alt="${car.make}" style="width: 100%; height: 100%; object-fit: cover;">
                     <div class="position-absolute top-0 end-0 m-2">
                         <span class="badge bg-warning text-dark fw-bold shadow-sm">${car.year}</span>
                     </div>
