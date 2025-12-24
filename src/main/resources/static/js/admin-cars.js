@@ -11,13 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
 });
 
-// 1. AUTH & INIT
 function checkAdminAuth() {
     const user = localStorage.getItem('currentUser');
-    if (!user) {
-        window.location.href = '/auth/login.html';
-        return;
-    }
+    if (!user) { window.location.href = '/auth/login.html'; return; }
     const userData = JSON.parse(user);
     if (!userData.roles || !userData.roles.includes('Admin')) {
         alert('Không có quyền truy cập');
@@ -28,24 +24,8 @@ function checkAdminAuth() {
 }
 
 async function loadBrandsAndLocations() {
-    // Giữ nguyên logic cũ của bạn (Fetch hoặc Mock data)
-    try {
-        const brandsRes = await fetch('/api/admin/brands', {credentials: 'include'});
-        if(brandsRes.ok) {
-            const data = await brandsRes.json();
-            brands = data.map(b => b.name);
-        }
-        const locRes = await fetch('/api/admin/locations', {credentials: 'include'});
-        if(locRes.ok) {
-             const data = await locRes.json();
-             locations = data.map(l => l.name);
-        }
-    } catch(e) { console.error(e); }
-
-    // Fallback data nếu API lỗi
-    if(brands.length === 0) brands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes'];
-    if(locations.length === 0) locations = ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng'];
-
+    brands = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes', 'Mazda', 'Kia', 'Hyundai', 'VinFast'];
+    locations = ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Cần Thơ', 'Hải Phòng', 'Nha Trang', 'Đà Lạt'];
     populateSelects();
 }
 
@@ -55,57 +35,60 @@ function populateSelects() {
     const filterBrand = document.getElementById('filterBrand');
     const filterLocation = document.getElementById('filterLocation');
 
-    if(makeSelect) {
-        makeSelect.innerHTML = '<option value="">Chọn hãng</option>';
-        brands.forEach(b => makeSelect.innerHTML += `<option value="${b}">${b}</option>`);
-    }
-    if(filterBrand) {
-        filterBrand.innerHTML = '<option value="">Tất cả hãng</option>';
-        brands.forEach(b => filterBrand.innerHTML += `<option value="${b}">${b}</option>`);
-    }
+    const generateOptions = (items, defaultText) => {
+        return `<option value="">${defaultText}</option>` +
+               items.map(item => `<option value="${item}">${item}</option>`).join('');
+    };
 
-    if(locationSelect) {
-        locationSelect.innerHTML = '<option value="">Chọn địa điểm</option>';
-        locations.forEach(l => locationSelect.innerHTML += `<option value="${l}">${l}</option>`);
-    }
-    if(filterLocation) {
-        filterLocation.innerHTML = '<option value="">Tất cả địa điểm</option>';
-        locations.forEach(l => filterLocation.innerHTML += `<option value="${l}">${l}</option>`);
-    }
+    if(makeSelect) makeSelect.innerHTML = generateOptions(brands, "Chọn hãng");
+    if(filterBrand) filterBrand.innerHTML = generateOptions(brands, "Tất cả hãng");
+    if(locationSelect) locationSelect.innerHTML = generateOptions(locations, "Chọn địa điểm");
+    if(filterLocation) filterLocation.innerHTML = generateOptions(locations, "Tất cả địa điểm");
 }
 
-// 2. LOAD CARS
 async function loadCars() {
     const container = document.getElementById('carsTable');
     container.innerHTML = '<div class="loading">Đang tải...</div>';
+
+    // Note: Assuming /api/admin/cars now has a GET mapping (added in Controller step)
+    const apiUrl = '/api/admin/cars';
+
     try {
-        const response = await fetch('/api/cars', { credentials: 'include' });
+        const response = await fetch(apiUrl, { credentials: 'include' });
         if (response.ok) {
             allCars = await response.json();
             displayCars(allCars);
         } else {
-            container.innerHTML = '<p class="empty-state">Lỗi tải dữ liệu</p>';
+            console.warn("Admin API failed");
+            container.innerHTML = '<p class="empty-state">Không có dữ liệu xe</p>';
         }
     } catch (error) {
         console.error(error);
-        container.innerHTML = '<p class="empty-state">Không thể kết nối Server</p>';
+        container.innerHTML = `<p class="empty-state">Lỗi: ${error.message}</p>`;
     }
 }
 
 function displayCars(cars) {
     const container = document.getElementById('carsTable');
-    if (cars.length === 0) {
+    if (!cars || cars.length === 0) {
         container.innerHTML = '<p class="empty-state">Chưa có xe nào</p>';
         return;
     }
-    container.innerHTML = `
+
+    let html = `
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>ID</th><th>Ảnh</th><th>Hãng & Tên</th><th>Năm</th><th>Giá/ngày</th><th>Thao tác</th>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 100px;">Ảnh</th>
+                    <th>Thông tin xe</th>
+                    <th>Thông số</th>
+                    <th>Giá thuê</th>
+                    <th style="width: 120px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
+
                 ${cars.map(car => {
                     // Fix image path: add /uploads/ if missing
                     let imgSrc = car.imageName || '';
@@ -128,41 +111,88 @@ function displayCars(cars) {
                 }).join('')}
             </tbody>
         </table>
+
     `;
+
+    html += cars.map(car => {
+        const makeName = (typeof car.make === 'object' && car.make !== null) ? car.make.name : car.make;
+        const locationName = (typeof car.location === 'object' && car.location !== null) ? car.location.name : car.location;
+        const imgUrl = car.imageName && car.imageName.startsWith('http') ? car.imageName : (car.imageName || '/images/default-car.png');
+
+        return `
+            <tr>
+                <td>#${car.id}</td>
+                <td>
+                    <div class="img-thumbnail-wrapper">
+                        <img src="${imgUrl}" alt="Car" onerror="this.src='https://placehold.co/60x40?text=No+Img'">
+                    </div>
+                </td>
+                <td>
+                    <div class="fw-bold">${makeName} ${car.model}</div>
+                    <div class="text-muted small">${locationName}</div>
+                </td>
+                <td>
+                    <span class="badge bg-light text-dark border">${car.year}</span>
+                    <span class="badge bg-light text-dark border">${car.transmission || 'Tự động'}</span>
+                    <span class="badge bg-light text-dark border">${car.seats || 4} chỗ</span>
+                </td>
+                <td class="fw-bold text-primary">
+                    ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(car.amount)}
+                </td>
+                <td class="actions">
+                    <button class="btn-icon edit" onclick="editCar(${car.id})" title="Sửa">✏️</button>
+                    <button class="btn-icon delete" onclick="deleteCar(${car.id})" title="Xóa">🗑️</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
 }
 
-// 3. FILTERING
 function setupFilters() {
-    document.getElementById('searchCar').addEventListener('input', filterCars);
-    document.getElementById('filterLocation').addEventListener('change', filterCars);
-    document.getElementById('filterBrand').addEventListener('change', filterCars);
+    const searchInput = document.getElementById('searchCar');
+    const filterLoc = document.getElementById('filterLocation');
+    const filterBr = document.getElementById('filterBrand');
+
+    const handleFilter = () => {
+        const search = searchInput.value.toLowerCase();
+        const loc = filterLoc.value;
+        const brand = filterBr.value;
+
+        const filtered = allCars.filter(c => {
+            const m = ((c.make?.name || c.make) || '').toLowerCase();
+            const l = ((c.location?.name || c.location) || '');
+            const model = (c.model || '').toLowerCase();
+            return (m.includes(search) || model.includes(search)) && (!loc || l === loc) && (!brand || (c.make?.name || c.make) === brand);
+        });
+        displayCars(filtered);
+    };
+
+    if(searchInput) searchInput.addEventListener('input', handleFilter);
+    if(filterLoc) filterLoc.addEventListener('change', handleFilter);
+    if(filterBr) filterBr.addEventListener('change', handleFilter);
 }
 
-function filterCars() {
-    const search = document.getElementById('searchCar').value.toLowerCase();
-    const loc = document.getElementById('filterLocation').value;
-    const brand = document.getElementById('filterBrand').value;
-
-    const filtered = allCars.filter(c => {
-        const m = (c.make?.name || c.make).toLowerCase();
-        return (m.includes(search) || c.model.toLowerCase().includes(search)) &&
-               (!loc || (c.location?.name || c.location) === loc) &&
-               (!brand || (c.make?.name || c.make) === brand);
-    });
-    displayCars(filtered);
-}
-
-// 4. MODAL ACTIONS
 function showAddCarModal() {
     document.getElementById('modalTitle').textContent = 'Thêm xe mới';
     document.getElementById('carForm').reset();
     document.getElementById('carId').value = '';
 
-    // Reset inputs file
+    // Reset defaults for new fields
+    document.getElementById('carFuel').value = 'Xăng';
+    document.getElementById('carTransmission').value = 'Tự động';
+    document.getElementById('carSeats').value = '4';
+
     document.getElementById('imageFile').value = '';
     document.getElementById('galleryFiles').value = '';
+    if(document.getElementById('imageUrl')) document.getElementById('imageUrl').value = '';
 
-    document.getElementById('carMessage').textContent = '';
+    const msgEl = document.getElementById('carMessage');
+    msgEl.textContent = '';
+    msgEl.className = 'message';
+
     document.getElementById('carModal').style.display = 'block';
 }
 
@@ -172,17 +202,22 @@ function editCar(id) {
 
     document.getElementById('modalTitle').textContent = 'Sửa thông tin xe';
     document.getElementById('carId').value = car.id;
-    document.getElementById('carMake').value = car.make?.name || car.make;
+
+    document.getElementById('carMake').value = (typeof car.make === 'object') ? car.make.name : car.make;
     document.getElementById('carModel').value = car.model;
     document.getElementById('carYear').value = car.year;
     document.getElementById('carAmount').value = car.amount;
-    document.getElementById('carLocation').value = car.location?.name || car.location;
-    document.getElementById('imageUrl').value = car.imageName || '';
+    document.getElementById('carLocation').value = (typeof car.location === 'object') ? car.location.name : car.location;
 
-    // Reset inputs file (vì lý do bảo mật không set value file được)
+    // Populate new fields
+    document.getElementById('carFuel').value = car.fuel || 'Xăng';
+    document.getElementById('carTransmission').value = car.transmission || 'Tự động';
+    document.getElementById('carSeats').value = car.seats || 4;
+
+    if(document.getElementById('imageUrl')) document.getElementById('imageUrl').value = car.imageName || '';
+
     document.getElementById('imageFile').value = '';
     document.getElementById('galleryFiles').value = '';
-
     document.getElementById('carMessage').textContent = '';
     document.getElementById('carModal').style.display = 'block';
 }
@@ -191,7 +226,6 @@ function closeCarModal() {
     document.getElementById('carModal').style.display = 'none';
 }
 
-// 5. SUBMIT FORM (CREATE / UPDATE)
 document.getElementById('carForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -207,65 +241,65 @@ document.getElementById('carForm').addEventListener('submit', async (e) => {
     formData.append('amount', document.getElementById('carAmount').value);
     formData.append('location', document.getElementById('carLocation').value);
 
-    // 1. Ảnh đại diện
+    // NEW FIELDS
+    formData.append('fuel', document.getElementById('carFuel').value);
+    formData.append('transmission', document.getElementById('carTransmission').value);
+    formData.append('seats', document.getElementById('carSeats').value);
+
     const fileInput = document.getElementById('imageFile');
-    const imageUrl = document.getElementById('imageUrl').value;
     if (fileInput.files.length > 0) {
         formData.append('file', fileInput.files[0]);
-    } else if (imageUrl) {
-        formData.append('imageName', imageUrl);
+    } else {
+        const oldImg = document.getElementById('imageUrl')?.value;
+        if(oldImg) formData.append('imageName', oldImg);
     }
 
-    // 2. Ảnh Gallery (MỚI)
     const galleryInput = document.getElementById('galleryFiles');
     if (galleryInput && galleryInput.files.length > 0) {
-        for (let i = 0; i < galleryInput.files.length; i++) {
-            formData.append('gallery', galleryInput.files[i]);
-        }
+        Array.from(galleryInput.files).forEach(file => {
+            formData.append('gallery', file);
+        });
     }
 
     messageEl.textContent = 'Đang xử lý...';
-    messageEl.className = 'message';
+    messageEl.className = 'message info';
+    messageEl.style.color = '#3563E9';
 
     try {
-        const response = await fetch(url, {
-            method: method,
-            credentials: 'include',
-            body: formData
-        });
-
+        const response = await fetch(url, { method: method, credentials: 'include', body: formData });
         if (response.ok) {
-            messageEl.textContent = 'Thành công!';
+            messageEl.textContent = carId ? 'Cập nhật thành công!' : 'Thêm mới thành công!';
+            messageEl.className = 'message success';
             messageEl.style.color = 'green';
-            setTimeout(() => {
-                closeCarModal();
-                loadCars();
-            }, 1000);
+            setTimeout(() => { closeCarModal(); loadCars(); }, 1000);
         } else {
             const txt = await response.text();
             messageEl.textContent = 'Lỗi: ' + txt;
+            messageEl.className = 'message error';
             messageEl.style.color = 'red';
         }
     } catch (error) {
         console.error(error);
-        messageEl.textContent = 'Lỗi kết nối server';
+        messageEl.textContent = 'Lỗi kết nối';
+        messageEl.className = 'message error';
         messageEl.style.color = 'red';
     }
 });
 
-// 6. DELETE
 async function deleteCar(id) {
-    if (!confirm('Bạn có chắc muốn xóa?')) return;
+    if (!confirm('Bạn có chắc chắn muốn xóa xe này?')) return;
     try {
-        const res = await fetch(`/api/admin/cars/${id}`, {method: 'DELETE', credentials: 'include'});
-        if(res.ok) loadCars();
-        else alert('Lỗi xóa xe');
-    } catch(e) { console.error(e); }
+        const res = await fetch(`/api/admin/cars/${id}`, { method: 'DELETE', credentials: 'include' });
+        if(res.ok) { alert("Đã xóa xe thành công"); loadCars(); }
+        else { const txt = await res.text(); alert('Lỗi: ' + txt); }
+    } catch(e) { console.error(e); alert("Lỗi kết nối"); }
 }
 
 function logout() {
-    localStorage.removeItem('currentUser');
-    window.location.href = '/index.html';
+    fetch('/api/auth/logout', { credentials: 'include' }).finally(() => {
+        localStorage.removeItem('currentUser');
+        window.location.href = '/index.html';
+    });
 }
 
 window.onclick = function (event) {

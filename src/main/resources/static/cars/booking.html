@@ -3,299 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt xe - Car Rental System</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Đặt xe - Car Rental</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #3563E9;
+            --secondary-color: #54A6FF;
+            --dark-text: #1A202C;
+            --light-text: #90A3BF;
+            --bg-color: #F6F7F9;
+            --card-radius: 16px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+        }
+
+        /* --- Navbar --- */
+        .navbar { background: #fff; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .navbar-brand { font-weight: 800; font-size: 28px; color: var(--primary-color) !important; text-transform: uppercase; }
+        .nav-link { font-weight: 600; color: var(--light-text) !important; margin: 0 15px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--primary-color) !important; }
+
+        /* --- Booking Layout --- */
+        .booking-card {
+            background: #fff; border-radius: var(--card-radius); padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03); margin-bottom: 30px;
+        }
+
+        .section-title { font-size: 20px; font-weight: 700; color: var(--dark-text); margin-bottom: 20px; }
+        .section-desc { font-size: 14px; color: var(--light-text); margin-bottom: 25px; }
+
+        /* Form Styles */
+        .form-label { font-weight: 700; font-size: 14px; color: var(--dark-text); margin-bottom: 8px; }
+        .form-control, .form-select {
+            padding: 12px 15px; border-radius: 10px; border: 1px solid #eee;
+            background-color: #fcfcfc; color: var(--dark-text); font-weight: 600; font-size: 15px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 4px rgba(53, 99, 233, 0.1);
+        }
+
+        /* Summary Card (Right) */
+        .summary-card {
+            background: #fff; border-radius: var(--card-radius); padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); position: sticky; top: 100px;
+        }
+        .summary-header { display: flex; gap: 15px; align-items: center; margin-bottom: 20px; }
+        .summary-img { width: 100px; height: 70px; object-fit: cover; border-radius: 8px; }
+        .summary-title { font-weight: 800; font-size: 18px; margin: 0; }
+
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; color: var(--light-text); font-weight: 500; }
+        .summary-row.total { border-top: 1px dashed #e0e0e0; padding-top: 15px; margin-top: 15px; color: var(--dark-text); font-size: 18px; font-weight: 800; }
+        .total-price { color: var(--primary-color); font-size: 24px; }
+
+        .btn-confirm {
+            background-color: var(--primary-color); color: #fff; border: none; padding: 14px;
+            font-weight: 700; border-radius: 10px; width: 100%; transition: 0.3s; font-size: 16px; margin-top: 20px;
+        }
+        .btn-confirm:hover { background-color: #2952cc; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3); }
+
+        /* Footer */
+        footer { background: #fff; padding: 40px 0; margin-top: 60px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center; }
+    </style>
 </head>
 <body>
-<!-- Navigation -->
-<nav class="navbar">
+
+<nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <div class="nav-brand">
-            <h1><a href="/index.html" style="color: inherit; text-decoration: none;">🚗 Car Rental</a></h1>
-        </div>
-        <div class="nav-menu">
-            <a href="/index.html" class="nav-link">Trang chủ</a>
-            <a href="/cars/cars.html" class="nav-link">Xe cho thuê</a>
-        </div>
-        <div class="nav-user">
-            <a href="/profile/profile.html" class="user-name" id="userName"></a>
-            <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+        <a class="navbar-brand" href="/index.html">CarRental</a>
+        <div class="d-flex align-items-center gap-3">
+            <div id="navUser" class="dropdown">
+                <button class="btn btn-light rounded-pill px-3 py-1 dropdown-toggle border shadow-sm" type="button" data-bs-toggle="dropdown">
+                    <img src="https://ui-avatars.com/api/?name=User&background=3563E9&color=fff" class="rounded-circle me-1" width="28" alt="Avt">
+                    <span id="userName" class="fw-bold text-dark">User</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                    <li><button class="dropdown-item text-danger fw-bold" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
 
-<!-- Booking Section -->
-<section class="section">
+<section class="py-5">
     <div class="container">
-        <a href="javascript:history.back()" class="back-link">← Quay lại</a>
+        <a href="javascript:history.back()" class="text-decoration-none text-secondary fw-bold mb-4 d-inline-block small">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
 
-        <div class="booking-container">
-            <div class="booking-main">
-                <h1>Đặt thuê xe</h1>
-
-                <form id="bookingForm" class="booking-form">
-                    <div class="form-section">
-                        <h3>Thông tin thuê xe</h3>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Ngày nhận xe *</label>
-                                <input type="date" name="startDate" id="startDate" class="form-input" required>
+        <form id="bookingForm">
+            <div class="row gx-5">
+                <div class="col-lg-8">
+                    <div class="booking-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h4 class="section-title mb-1">Thông tin thuê xe</h4>
+                                <p class="section-desc mb-0">Vui lòng chọn thời gian nhận và trả xe.</p>
                             </div>
-                            <div class="form-group">
-                                <label>Giờ nhận xe *</label>
-                                <input type="time" name="startTime" id="startTime" class="form-input" value="09:00"
-                                       required>
-                            </div>
+                            <span class="text-muted small fw-bold">Bước 1/2</span>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Ngày trả xe *</label>
-                                <input type="date" name="endDate" id="endDate" class="form-input" required>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày nhận xe</label>
+                                <input type="date" id="startDate" name="startDate" class="form-control" required>
                             </div>
-                            <div class="form-group">
-                                <label>Giờ trả xe *</label>
-                                <input type="time" name="endTime" id="endTime" class="form-input" value="18:00"
-                                       required>
+                            <div class="col-md-6">
+                                <label class="form-label">Giờ nhận</label>
+                                <input type="time" id="startTime" name="startTime" class="form-control" value="09:00" required>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Địa điểm nhận xe *</label>
-                            <select name="pickupLocation" class="form-input" required>
-                                <option value="">Chọn địa điểm</option>
-                                <option value="Quận 1, TP.HCM">Quận 1, TP.HCM</option>
-                                <option value="Quận 3, TP.HCM">Quận 3, TP.HCM</option>
-                                <option value="Tân Bình, TP.HCM">Tân Bình, TP.HCM</option>
-                                <option value="Sân bay Tân Sơn Nhất">Sân bay Tân Sơn Nhất</option>
-                            </select>
+                            <div class="col-md-6">
+                                <label class="form-label">Ngày trả xe</label>
+                                <input type="date" id="endDate" name="endDate" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Giờ trả</label>
+                                <input type="time" id="endTime" name="endTime" class="form-control" value="18:00" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Địa điểm nhận xe</label>
+                                <select name="pickupLocation" class="form-select" required>
+                                    <option value="">Chọn địa điểm</option>
+                                    <option value="Quận 1, TP.HCM">Quận 1, TP.HCM</option>
+                                    <option value="Quận 3, TP.HCM">Quận 3, TP.HCM</option>
+                                    <option value="Tân Bình, TP.HCM">Tân Bình, TP.HCM</option>
+                                    <option value="Sân bay Tân Sơn Nhất">Sân bay Tân Sơn Nhất</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h3>Thông tin liên hệ</h3>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Họ tên *</label>
-                                <input type="text" name="fullName" id="fullName" class="form-input" required>
+                    <div class="booking-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h4 class="section-title mb-1">Thông tin liên hệ</h4>
+                                <p class="section-desc mb-0">Chúng tôi sẽ liên hệ với bạn qua thông tin này.</p>
                             </div>
-                            <div class="form-group">
-                                <label>Số điện thoại *</label>
-                                <input type="tel" name="phone" class="form-input" placeholder="0901234567" required>
-                            </div>
+                            <span class="text-muted small fw-bold">Bước 2/2</span>
                         </div>
 
-                        <div class="form-group">
-                            <label>Email *</label>
-                            <input type="email" name="email" id="email" class="form-input" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ghi chú</label>
-                            <textarea name="notes" class="form-textarea" rows="3"
-                                      placeholder="Yêu cầu đặc biệt (nếu có)"></textarea>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" id="fullName" name="fullName" class="form-control" placeholder="Nguyễn Văn A" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="tel" id="phone" name="phone" class="form-control" placeholder="0901234567" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="email@domain.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Ghi chú (Tùy chọn)</label>
+                                <textarea name="notes" class="form-control" rows="3" placeholder="Yêu cầu thêm..."></textarea>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="terms" required>
-                            Tôi đồng ý với <a href="#" style="color: #007bff;">điều khoản sử dụng</a>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="terms" required>
+                        <label class="form-check-label small text-secondary" for="terms">
+                            Tôi đồng ý với <a href="#" class="text-primary fw-bold text-decoration-none">Điều khoản dịch vụ</a> và Chính sách bảo mật.
                         </label>
                     </div>
+                </div>
 
-                    <div id="bookingMessage" class="error-message"></div>
+                <div class="col-lg-4">
+                    <div class="summary-card">
+                        <h5 class="fw-bold mb-4">Tóm tắt đơn hàng</h5>
 
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">
-                        Xác nhận đặt xe
-                    </button>
-                </form>
+                        <div class="summary-header">
+                            <img id="carImage" src="" alt="Car" class="summary-img bg-light">
+                            <div>
+                                <h6 id="carName" class="summary-title">Loading...</h6>
+                                <div class="text-warning small">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    <span class="text-muted fw-normal ms-1">(12 đánh giá)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="summary-row">
+                            <span>Đơn giá</span>
+                            <span id="dailyRate" class="fw-bold text-dark">0 VNĐ</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Số ngày</span>
+                            <span id="totalDays" class="fw-bold text-dark">0 ngày</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Phụ phí</span>
+                            <span class="fw-bold text-dark">0 VNĐ</span>
+                        </div>
+
+                        <div class="summary-row total">
+                            <span>Tổng cộng</span>
+                            <span id="totalPrice" class="total-price">0 VNĐ</span>
+                        </div>
+
+                        <div id="bookingMessage" class="alert d-none mt-3 small"></div>
+
+                        <button type="submit" class="btn-confirm">Xác nhận thuê xe</button>
+
+                        <div class="text-center mt-3 small text-muted">
+                            <i class="fas fa-shield-alt me-1"></i> An toàn & Bảo mật 100%
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <!-- Booking Summary -->
-            <div class="booking-summary">
-                <h3>Thông tin xe</h3>
-                <div class="summary-car">
-                    <img id="carImage" src="" alt="Car">
-                    <h4 id="carName">Tên xe</h4>
-                </div>
-
-                <div class="summary-details">
-                    <div class="summary-row">
-                        <span>Giá thuê:</span>
-                        <span id="dailyRate">0 VNĐ/ngày</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Số ngày:</span>
-                        <span id="totalDays">0 ngày</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Tổng cộng:</span>
-                        <span id="totalPrice">0 VNĐ</span>
-                    </div>
-                </div>
-
-                <div class="summary-note">
-                    <p>💡 Giá đã bao gồm bảo hiểm cơ bản</p>
-                    <p>📞 Hỗ trợ 24/7: 1900 xxxx</p>
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
 </section>
 
+<footer>
+    <div class="container">
+        <p class="mb-0 fw-bold small text-secondary">©2025 CarRental. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const carId = urlParams.get('carId');
-        let carData = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = urlParams.get('carId');
 
-        // Check auth
-        const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
-            window.location.href = '/auth/login.html';
-        } else {
-            const user = JSON.parse(currentUser);
-            document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
-            document.getElementById('fullName').value = `${user.firstName} ${user.lastName}`;
-            document.getElementById('email').value = user.email;
-        }
+    // --- LẤY DỮ LIỆU THỜI GIAN TỪ URL (FIX LỖI) ---
+    // car-detail.html sẽ gửi dạng: booking.html?carId=1&start=...&end=...
+    const urlStartDate = urlParams.get('start');
+    const urlEndDate = urlParams.get('end');
 
-        // Set min date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').min = today;
-        document.getElementById('endDate').min = today;
+    let carData = null;
 
-        // Load car data
-        if (carId) {
-            loadCarData(carId);
-        }
+    // 1. Check Auth
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+        window.location.href = '/auth/login.html';
+    } else {
+        const user = JSON.parse(currentUser);
+        document.getElementById('userName').textContent = user.firstName || "User";
+        document.getElementById('fullName').value = (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : "";
+        document.getElementById('email').value = user.email;
+    }
 
-        async function loadCarData(id) {
-            try {
-                const response = await fetch(`/api/cars/${id}`, { credentials: 'include' });
-                
-                if (response.ok) {
-                    const car = await response.json();
-                    carData = {
-                        id: car.id,
-                        name: `${car.make} ${car.model}`,
-                        price: car.amount,
-                        image: car.imageName || 'https://via.placeholder.com/200x150?text=' + car.make
-                    };
-                } else {
-                    // Fallback to mock data
-                    carData = {
-                        id: id,
-                        name: 'Toyota Camry 2024',
-                        price: 800000,
-                        image: 'https://via.placeholder.com/200x150?text=Toyota+Camry'
-                    };
-                }
-            } catch (error) {
-                console.error('Error loading car:', error);
-                // Fallback to mock data
+    // 2. Set Default Dates (Logic mới)
+    const today = new Date().toISOString().split('T')[0];
+
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+
+    // Ưu tiên lấy từ URL trước, nếu không có thì lấy ngày hiện tại
+    if (urlStartDate) {
+        // urlStartDate dạng "YYYY-MM-DDTHH:MM" -> cắt lấy YYYY-MM-DD
+        startDateInput.value = urlStartDate.split('T')[0];
+        // Lấy giờ nếu có
+        const timePart = urlStartDate.split('T')[1];
+        if(timePart) document.getElementById('startTime').value = timePart;
+    } else {
+        startDateInput.value = today;
+    }
+    startDateInput.min = today;
+
+    if (urlEndDate) {
+        endDateInput.value = urlEndDate.split('T')[0];
+        const timePart = urlEndDate.split('T')[1];
+        if(timePart) document.getElementById('endTime').value = timePart;
+    } else {
+        // Mặc định ngày trả = ngày nhận + 1
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        endDateInput.value = tomorrow.toISOString().split('T')[0];
+    }
+    endDateInput.min = today;
+
+    // 3. Load Data & Calculate
+    if (carId) loadCarData(carId);
+
+    async function loadCarData(id) {
+        try {
+            const response = await fetch(`/api/cars/${id}`, { credentials: 'include' });
+            if (response.ok) {
+                const car = await response.json();
                 carData = {
-                    id: id,
-                    name: 'Toyota Camry 2024',
-                    price: 800000,
-                    image: 'https://via.placeholder.com/200x150?text=Toyota+Camry'
+                    id: car.id,
+                    name: `${car.make} ${car.model}`,
+                    price: car.amount,
+                    image: car.imageName || 'https://via.placeholder.com/200x150'
                 };
             }
-
-            document.getElementById('carName').textContent = carData.name;
-            document.getElementById('carImage').src = carData.image;
-            document.getElementById('dailyRate').textContent = carData.price.toLocaleString() + ' VNĐ/ngày';
+        } catch (error) {
+            console.error('Error:', error);
         }
 
-        // Calculate total when dates change
-        document.getElementById('startDate').addEventListener('change', calculateTotal);
-        document.getElementById('endDate').addEventListener('change', calculateTotal);
-        
-        // Validate end date is after start date
-        document.getElementById('endDate').addEventListener('change', function() {
-            const startDate = new Date(document.getElementById('startDate').value);
-            const endDate = new Date(this.value);
-            
-            if (endDate <= startDate) {
-                alert('Ngày trả xe phải sau ngày nhận xe');
-                this.value = '';
-            }
-        });
-
-        function calculateTotal() {
-            const startDate = new Date(document.getElementById('startDate').value);
-            const endDate = new Date(document.getElementById('endDate').value);
-            
-            if (startDate && endDate && endDate > startDate) {
-                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-                const total = days * carData.price;
-                
-                document.getElementById('totalDays').textContent = days + ' ngày';
-                document.getElementById('totalPrice').textContent = total.toLocaleString() + ' VNĐ';
-            }
+        // Nếu lỗi hoặc không có data, dùng mock để test giao diện
+        if (!carData) {
+            carData = { id: id, name: 'Đang tải...', price: 0, image: '' };
         }
 
-        // Handle form submit
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
-            const bookingData = {
-                carId: parseInt(carId),
-                startDate: formData.get('startDate'),
-                endDate: formData.get('endDate'),
-                startTime: formData.get('startTime'),
-                endTime: formData.get('endTime'),
-                pickupLocation: formData.get('pickupLocation'),
-                fullName: formData.get('fullName'),
-                phone: formData.get('phone'),
-                email: formData.get('email'),
-                notes: formData.get('notes')
-            };
+        document.getElementById('carName').textContent = carData.name;
+        document.getElementById('carImage').src = carData.image;
+        document.getElementById('dailyRate').textContent = new Intl.NumberFormat('vi-VN').format(carData.price) + ' VNĐ';
 
-            const messageEl = document.getElementById('bookingMessage');
-            messageEl.textContent = 'Đang xử lý...';
-            messageEl.className = 'info-message';
+        calculateTotal(); // Tính tiền ngay khi load xong
+    }
 
-            try {
-                const response = await fetch('/api/reservations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify(bookingData)
-                });
+    // 4. Calculate Total Logic
+    startDateInput.addEventListener('change', calculateTotal);
+    endDateInput.addEventListener('change', calculateTotal);
 
-                if (response.ok) {
-                    messageEl.textContent = 'Đặt xe thành công! Chúng tôi sẽ liên hệ với bạn sớm.';
-                    messageEl.className = 'success-message';
-                    
-                    setTimeout(() => {
-                        window.location.href = '/profile/profile.html#reservations';
-                    }, 2000);
-                } else {
-                    const error = await response.text();
-                    messageEl.textContent = 'Đặt xe thất bại: ' + error;
-                    messageEl.className = 'error-message';
-                }
-            } catch (error) {
-                console.error('Booking error:', error);
-                messageEl.textContent = 'Có lỗi xảy ra. Vui lòng thử lại.';
-                messageEl.className = 'error-message';
-            }
-        });
+    function calculateTotal() {
+        if (!carData) return;
 
-        function logout() {
-            fetch('/api/auth/logout', { credentials: 'include' })
-                .finally(() => {
-                    localStorage.removeItem('currentUser');
-                    window.location.href = '/index.html';
-                });
+        const start = new Date(startDateInput.value);
+        const end = new Date(endDateInput.value);
+
+        if (start && end && end >= start) {
+            // Tính số ngày (làm tròn lên)
+            const diffTime = Math.abs(end - start);
+            let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (days === 0) days = 1; // Tối thiểu 1 ngày
+
+            const total = days * carData.price;
+
+            document.getElementById('totalDays').textContent = days + ' ngày';
+            document.getElementById('totalPrice').textContent = new Intl.NumberFormat('vi-VN').format(total) + ' VNĐ';
+        } else {
+            document.getElementById('totalDays').textContent = '0 ngày';
+            document.getElementById('totalPrice').textContent = '0 VNĐ';
         }
+    }
 
+    // 5. Submit Booking
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const messageEl = document.getElementById('bookingMessage');
+        messageEl.className = 'alert alert-info mt-3 small';
+        messageEl.textContent = 'Đang xử lý...';
+        messageEl.classList.remove('d-none');
+
+        const formData = new FormData(e.target);
+
+        // Gộp ngày + giờ để gửi backend chuẩn ISO-8601 nếu cần
+        // Hoặc gửi riêng tùy backend của bạn. Ở đây tôi gửi riêng cho an toàn.
+        const bookingData = {
+            carId: parseInt(carId),
+            startDate: formData.get('startDate'),
+            endDate: formData.get('endDate'),
+            startTime: formData.get('startTime'),
+            endTime: formData.get('endTime'),
+            pickupLocation: formData.get('pickupLocation'),
+            fullName: formData.get('fullName'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            notes: formData.get('notes')
+        };
+
+        try {
+            const response = await fetch('/api/reservations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(bookingData)
+            });
+
+            if (response.ok) {
+                messageEl.className = 'alert alert-success mt-3 small';
+                messageEl.textContent = 'Đặt xe thành công! Chuyển hướng...';
+                setTimeout(() => window.location.href = '/index.html', 1500);
+            } else {
+                const text = await response.text();
+                messageEl.className = 'alert alert-danger mt-3 small';
+                messageEl.textContent = 'Lỗi: ' + text;
+            }
+        } catch (error) {
+            messageEl.className = 'alert alert-danger mt-3 small';
+            messageEl.textContent = 'Lỗi kết nối server.';
+        }
+    });
+
+    function logout() {
+        fetch('/api/auth/logout', { credentials: 'include' })
+            .finally(() => {
+                localStorage.removeItem('currentUser');
+                window.location.href = '/index.html';
+            });
+    }
 </script>
 </body>
 </html>

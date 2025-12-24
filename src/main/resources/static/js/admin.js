@@ -57,6 +57,40 @@ async function loadDashboardStats() {
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    checkAdminAuth(); // Hàm check quyền admin cũ của bạn
+    loadDashboardStats();
+    loadRecentReservations();
+});
+
+async function loadDashboardStats() {
+    // 1. Load các thống kê cũ (Giữ nguyên logic cũ của bạn)
+    // Ví dụ: gọi API /api/admin/stats ...
+
+    // 2. THÊM MỚI: Load số lượng xe chờ duyệt
+    try {
+        // Gọi API lấy danh sách xe PENDING mà chúng ta vừa tạo ở bước trước
+        const res = await fetch('/api/admin/cars/pending', { credentials: 'include' });
+        if (res.ok) {
+            const pendingCars = await res.json();
+            const count = pendingCars.length;
+
+            // Cập nhật số liệu trên Card Dashboard
+            const pendingEl = document.getElementById('totalPending');
+            if (pendingEl) pendingEl.innerText = count;
+
+            // Cập nhật Badge đỏ trên Menu (nếu có xe chờ duyệt)
+            const badge = document.getElementById('navPendingBadge');
+            if (badge) {
+                badge.innerText = count;
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+        }
+    } catch (error) {
+        console.error("Lỗi tải thống kê xe chờ duyệt:", error);
+    }
+}
+
 async function loadRecentReservations() {
     const container = document.getElementById('recentReservations');
     

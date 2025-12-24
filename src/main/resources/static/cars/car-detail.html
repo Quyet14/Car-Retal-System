@@ -1,323 +1,376 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chi tiết xe - Car Rental</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-    :root{
-      --radius: 18px;
-      --gap: 12px;
-    }
+        :root {
+            --primary-color: #3563E9;
+            --secondary-color: #54A6FF;
+            --dark-text: #1A202C;
+            --light-text: #90A3BF;
+            --bg-color: #F6F7F9;
+            --card-radius: 16px;
+        }
 
-    /* ====== GALLERY MIOTO (main trái + 3 ảnh phải) ====== */
-    .mioto-gallery{
-      display:grid;
-      grid-template-columns: 2.35fr 1fr;
-      gap: var(--gap);
-      align-items: stretch;
-      margin-bottom: 26px;
-    }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+        }
 
-    /* MAIN: giữ form giống Mioto (to, rộng) */
-    .gallery-main{
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background:#f3f4f6;
-      aspect-ratio: 16 / 9;    /* quan trọng */
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
-    }
+        /* --- Navbar --- */
+        .navbar { background: #fff; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .navbar-brand { font-weight: 800; font-size: 28px; color: var(--primary-color) !important; text-transform: uppercase; }
+        .nav-link { font-weight: 600; color: var(--light-text) !important; margin: 0 15px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--primary-color) !important; }
 
-    /* SIDE: 3 ảnh xếp dọc, mỗi ảnh cùng chiều cao */
-    .gallery-side{
-      display:flex;
-      flex-direction: column;
-      gap: var(--gap);
-    }
+        /* --- Buttons --- */
+        .btn-primary-custom {
+            background-color: var(--primary-color); color: #fff; border: none; padding: 14px 24px;
+            font-weight: 700; border-radius: 10px; transition: all 0.3s ease; width: 100%; font-size: 1rem;
+        }
+        .btn-primary-custom:hover {
+            background-color: #2952cc; transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3);
+        }
 
-    .side-item{
-      position: relative;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background:#f3f4f6;
-      flex: 1;
-      min-height: 0;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
-    }
+        /* --- CAROUSEL STYLE (SLIDER 1 HÌNH) --- */
+        .car-carousel {
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            background: #e0e0e0;
+            position: relative;
+        }
 
-    /* Để 3 ảnh phải "đều" và giống Mioto: ép mỗi item theo tỉ lệ */
-    .side-item::before{
-      content:"";
-      display:block;
-      aspect-ratio: 16 / 10;  /* hơi thấp hơn main */
-    }
-    .side-item > img{
-      position:absolute;
-      inset:0;
-    }
+        .carousel-item {
+            height: 450px; /* Chiều cao cố định cho khung ảnh */
+        }
 
-    /* Ảnh fill khung */
-    .gallery-main img,
-    .side-item img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      display:block;
-      cursor:pointer;
-      transition: transform .35s ease;
-    }
-    .gallery-main:hover img,
-    .side-item:hover img{
-      transform: scale(1.04);
-    }
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ảnh tự cắt để lấp đầy khung */
+            object-position: center;
+        }
 
-    /* Overlay +x */
-    .more-photos{
-      position:absolute;
-      inset:0;
-      background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.15));
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 1.6rem;
-      font-weight: 800;
-      pointer-events:none;
-    }
+        /* Custom Indicators (Dấu chấm) */
+        .carousel-indicators [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 2px solid transparent;
+            opacity: 0.6;
+            margin: 0 5px;
+            transition: 0.3s;
+        }
+        .carousel-indicators .active {
+            opacity: 1;
+            background-color: var(--primary-color);
+            transform: scale(1.3);
+        }
 
-    /* Nút xem tất cả ảnh (giống Mioto) */
-    .view-all-btn{
-      position:absolute;
-      right: 14px;
-      bottom: 14px;
-      background: rgba(255,255,255,.95);
-      border: 1px solid rgba(0,0,0,.08);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 700;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.12);
-      user-select:none;
-      pointer-events:auto;
-    }
+        /* Nút Prev/Next */
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%;
+            opacity: 0; /* Ẩn bình thường */
+            transition: 0.3s;
+        }
+        .car-carousel:hover .carousel-control-prev,
+        .car-carousel:hover .carousel-control-next {
+            opacity: 0.8; /* Hiện khi di chuột vào */
+        }
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            padding: 20px;
+            background-size: 50%;
+        }
 
-    /* ====== CARD ====== */
-    .card-soft{
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.06);
-      background:#fff;
-    }
+        /* --- Info Card (Left) --- */
+        .info-card {
+            background: #fff; border-radius: var(--card-radius); padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03); margin-bottom: 30px;
+        }
+        .car-title-lg { font-size: 32px; font-weight: 800; color: var(--dark-text); margin-bottom: 5px; line-height: 1.2; }
 
-    .status-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: .85rem;
-      background: #E9FBF0;
-      color: #0f7a3c;
-    }
-    .status-dot{
-      width:8px;height:8px;border-radius:50%;
-      background:#16a34a;
-    }
+        .status-badge {
+            background: #E0F2FE; color: var(--primary-color); padding: 6px 12px;
+            border-radius: 20px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .status-dot { width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; }
 
-    .price-text{
-      font-size: 1.45rem;
-      font-weight: 900;
-    }
+        .spec-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            margin: 30px 0; padding: 25px; background: #F8F9FA; border-radius: 16px; border: 1px solid #eee;
+        }
+        .spec-box { display: flex; flex-direction: column; gap: 8px; }
+        .spec-label { color: var(--light-text); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .spec-value { font-weight: 700; color: var(--dark-text); font-size: 1.1rem; }
 
-    .spec-item{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      color:#6b7280;
-    }
-    .spec-item i{
-      width: 18px;
-      margin-top: 3px;
-      color:#6b7280;
-    }
-    .spec-item span.value{
-      color:#111827;
-      font-weight: 800;
-    }
+        /* --- Booking Widget (Right - Sticky) --- */
+        .booking-widget {
+            background: #fff; border-radius: var(--card-radius); padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08); position: sticky; top: 100px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .price-tag { font-size: 28px; font-weight: 800; color: var(--primary-color); }
+        .price-unit { font-size: 16px; color: var(--light-text); font-weight: 600; }
 
-    .booking-card{
-      position: sticky;
-      top: 90px;
-    }
+        .divider { border-top: 1px dashed #e0e0e0; margin: 25px 0; }
 
-    /* ===== MODAL ===== */
-    .gallery-grid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .gallery-grid img{
-      width:100%;
-      height: 170px;
-      object-fit:cover;
-      border-radius: 14px;
-      cursor:pointer;
-    }
-    @media (max-width: 992px){
-      .gallery-grid{ grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 576px){
-      .gallery-grid{ grid-template-columns: 1fr; }
-      .gallery-grid img{ height: 200px; }
-    }
+        .support-info { display: flex; align-items: center; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; }
+        .support-icon { width: 45px; height: 45px; background: #F0F5FF; color: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
 
-    /* ===== MOBILE: giống Mioto (main trên, 3 ảnh dưới nằm ngang) ===== */
-    @media (max-width: 768px){
-      .mioto-gallery{
-        grid-template-columns: 1fr;
-      }
-
-      .gallery-side{
-        flex-direction: row;
-      }
-
-      .side-item{
-        flex: 1;
-      }
-
-      .side-item::before{
-        aspect-ratio: 16 / 10;
-      }
-    }
-  </style>
+        /* Responsive */
+        @media (max-width: 992px) {
+            .spec-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .carousel-item { height: 250px; } /* Mobile ảnh thấp hơn */
+            .booking-widget { position: static; margin-top: 20px; }
+            .spec-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+
+<nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold text-warning" href="/index.html">
-            <i class="fas fa-car-side me-2"></i>CAR RENTAL
-        </a>
-
-        <div id="navAuth">
-            <a href="/auth/login.html" class="btn btn-outline-dark btn-sm">Đăng nhập</a>
-        </div>
-
-        <div id="navUser" class="dropdown" style="display: none;">
-            <button class="btn btn-outline-dark btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <span id="userName">User</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><button class="dropdown-item text-danger" onclick="logout()">Đăng xuất</button></li>
-            </ul>
+        <a class="navbar-brand" href="/index.html">CarRental</a>
+        <div class="d-flex align-items-center gap-3">
+            <div id="navAuth">
+                <a href="/auth/login.html" class="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold">Đăng nhập</a>
+            </div>
+            <div id="navUser" class="dropdown" style="display: none;">
+                <button class="btn btn-light rounded-pill px-3 py-1 dropdown-toggle border shadow-sm" type="button" data-bs-toggle="dropdown">
+                    <img src="https://ui-avatars.com/api/?name=User&background=3563E9&color=fff" class="rounded-circle me-1" width="28" alt="Avt">
+                    <span id="userName" class="fw-bold text-dark">User</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                    <li><button class="dropdown-item text-danger fw-bold" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
 
-<section class="py-5 bg-light">
+<section class="py-5">
     <div class="container">
-        <a href="/cars/cars.html" class="text-decoration-none text-secondary mb-3 d-inline-block">← Quay lại</a>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/index.html" class="text-decoration-none text-secondary">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/cars/cars.html" class="text-decoration-none text-secondary">Danh sách xe</a></li>
+                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page" id="breadcrumbName">Chi tiết xe</li>
+            </ol>
+        </nav>
 
-        <!-- ===== GALLERY ===== -->
-        <div class="mioto-gallery">
-            <div class="gallery-main">
-                <img id="mainDisplay" src="" alt="Xe" />
-            </div>
+        <div id="carGalleryCarousel" class="carousel slide car-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators" id="carouselIndicators"></div>
 
-            <div class="gallery-side" id="sideContainer"></div>
-        </div>
-
-        <div class="row g-4">
-            <!-- LEFT -->
-            <div class="col-lg-8">
-                <div class="p-4 card-soft">
-                    <h3 id="carName" class="fw-bold mb-2">...</h3>
-
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-                        <span class="status-badge"><span class="status-dot"></span>Đang rảnh</span>
-                    </div>
-
-                    <div class="price-text text-primary mb-4">
-                        <span id="carPrice">0</span> VNĐ/ngày
-                    </div>
-
-                    <h5 class="fw-bold mb-3">Đặc điểm</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-6 col-md-4">
-                            <div class="spec-item">
-                                <i class="fas fa-car"></i>
-                                <div>Hãng: <span id="carBrand" class="value"></span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="spec-item">
-                                <i class="fas fa-calendar"></i>
-                                <div>Năm: <span id="carYear" class="value"></span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="spec-item">
-                                <i class="fas fa-chair"></i>
-                                <div>Ghế: <span id="carSeats" class="value"></span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="spec-item">
-                                <i class="fas fa-cogs"></i>
-                                <div>Số: <span id="carTransmission" class="value"></span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="spec-item">
-                                <i class="fas fa-gas-pump"></i>
-                                <div>Nhiên liệu: <span id="carFuel" class="value"></span></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h5 class="fw-bold mb-2">Mô tả</h5>
-                    <p class="text-muted mb-0">Xe đời mới, nội thất sạch sẽ, bảo dưỡng định kỳ.</p>
+            <div class="carousel-inner" id="carouselInner">
+                <div class="carousel-item active">
+                    <img src="https://via.placeholder.com/1200x600?text=Loading..." class="d-block w-100" alt="Loading">
                 </div>
             </div>
 
-            <!-- RIGHT -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carGalleryCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Trước</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carGalleryCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Sau</span>
+            </button>
+        </div>
+        <div class="row gx-5">
+            <div class="col-lg-8">
+                <div class="info-card">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 id="carName" class="car-title-lg">Đang tải thông tin...</h1>
+                            <div class="d-flex gap-2 align-items-center mt-2">
+                                <div class="status-badge">
+                                    <span class="status-dot"></span> Đang sẵn sàng
+                                </div>
+                                <span class="text-muted small"><i class="fas fa-map-marker-alt me-1"></i> <span id="carLocationText">-</span></span>
+                            </div>
+                        </div>
+                        <button class="btn btn-light rounded-circle p-3 shadow-sm" style="width: 50px; height: 50px;"><i class="far fa-heart fs-5 text-danger"></i></button>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h4 class="fw-bold mb-4 text-dark">Đặc điểm xe</h4>
+                    <div class="spec-grid">
+                        <div class="spec-box">
+                            <span class="spec-label"><i class="fas fa-car fa-lg text-primary"></i> Hãng xe</span>
+                            <span class="spec-value" id="carBrand">-</span>
+                        </div>
+                        <div class="spec-box">
+                            <span class="spec-label"><i class="fas fa-calendar-alt fa-lg text-primary"></i> Năm SX</span>
+                            <span class="spec-value" id="carYear">-</span>
+                        </div>
+                        <div class="spec-box">
+                            <span class="spec-label"><i class="fas fa-users fa-lg text-primary"></i> Số chỗ</span>
+                            <span class="spec-value" id="carSeats">-</span>
+                        </div>
+                        <div class="spec-box">
+                            <span class="spec-label"><i class="fas fa-cogs fa-lg text-primary"></i> Truyền động</span>
+                            <span class="spec-value" id="carTransmission">-</span>
+                        </div>
+                        <div class="spec-box">
+                            <span class="spec-label"><i class="fas fa-gas-pump fa-lg text-primary"></i> Nhiên liệu</span>
+                            <span class="spec-value" id="carFuel">-</span>
+                        </div>
+                    </div>
+
+                    <h4 class="fw-bold mb-3 text-dark">Mô tả chi tiết</h4>
+                    <p class="text-secondary" style="line-height: 1.8; font-size: 1.05rem;">
+                        Xe đời mới, nội thất sạch sẽ, bảo dưỡng định kỳ chính hãng.
+                        Phù hợp cho gia đình đi du lịch hoặc gặp gỡ đối tác.
+                        Trang bị đầy đủ màn hình giải trí, camera lùi, cảm biến va chạm.
+                        Xe được vệ sinh kỹ càng trước khi giao.
+                    </p>
+                </div>
+            </div>
+
             <div class="col-lg-4">
-                <div class="p-4 card-soft booking-card">
-                    <button class="btn btn-primary btn-lg w-100 fw-bold py-3" onclick="bookCar()">ĐẶT XE NGAY</button>
-                    <small class="d-block text-center text-muted mt-2">Hỗ trợ 24/7</small>
+                <div class="booking-widget">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="text-secondary fw-bold">GIÁ THUÊ XE</span>
+                        <div class="d-flex align-items-end gap-1">
+                            <span class="price-tag" id="carPrice">0</span>
+                            <span class="price-unit">/ ngày</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-4 border">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Ngày nhận xe</label>
+                            <input type="datetime-local" id="detailStartDate" class="form-control border-0 bg-white fw-bold shadow-sm" style="padding: 12px;">
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Ngày trả xe</label>
+                            <input type="datetime-local" id="detailEndDate" class="form-control border-0 bg-white fw-bold shadow-sm" style="padding: 12px;">
+                        </div>
+                    </div>
+
+                    <button class="btn-primary-custom shadow-lg" onclick="bookCar()">
+                        ĐẶT XE NGAY
+                    </button>
+
+                    <div class="support-info">
+                        <div class="support-icon"><i class="fas fa-headset"></i></div>
+                        <div>
+                            <div class="fw-bold text-dark">Hỗ trợ 24/7</div>
+                            <div class="text-primary fw-bold fs-5">1900 1234</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ===== MODAL: Xem tất cả ảnh ===== -->
-<div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" style="border-radius: 18px; overflow:hidden;">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Tất cả ảnh</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="galleryGrid" class="gallery-grid"></div>
-            </div>
+<footer>
+    <div class="container">
+        <div class="text-center pt-4 border-top">
+            <p class="mb-0 fw-bold small text-secondary">©2025 CarRental. Tất cả các quyền được bảo hộ.</p>
         </div>
     </div>
-</div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const carId = urlParams.get("id");
+    const currentUserStr = localStorage.getItem("currentUser");
+
+    // --- 1. Check Auth ---
+    if (currentUserStr) {
+        document.getElementById("navAuth").style.display = "none";
+        document.getElementById("navUser").style.display = "block";
+        const user = JSON.parse(currentUserStr);
+        document.getElementById("userName").textContent = user.firstName || "User";
+    }
+
+    // --- 2. Load Data ---
+    if (carId) loadCarDetail(carId);
+
+    async function loadCarDetail(id) {
+        try {
+            const res = await fetch(`/api/cars/${id}`, { credentials: "include" });
+            if (!res.ok) return;
+
+            const car = await res.json();
+
+            // Populate Text Data
+            document.getElementById("carName").textContent = `${car.make} ${car.model}`;
+            document.getElementById("breadcrumbName").textContent = `${car.make} ${car.model}`;
+            document.getElementById("carPrice").textContent = new Intl.NumberFormat("vi-VN").format(car.amount) + "đ";
+            document.getElementById("carBrand").textContent = car.make || "-";
+            document.getElementById("carYear").textContent = car.year || "-";
+            document.getElementById("carSeats").textContent = (car.seats || 5) + " chỗ";
+            document.getElementById("carTransmission").textContent = car.transmission || "Tự động";
+            document.getElementById("carFuel").textContent = car.fuel || "Xăng";
+            document.getElementById("carLocationText").textContent = car.location || "Hồ Chí Minh";
+
+            // === XỬ LÝ CAROUSEL (SLIDER) ===
+            const indicatorsEl = document.getElementById('carouselIndicators');
+            const innerEl = document.getElementById('carouselInner');
+
+            // Xóa nội dung loading cũ
+            indicatorsEl.innerHTML = '';
+            innerEl.innerHTML = '';
+
+            // 1. Tạo danh sách tất cả ảnh (Ảnh chính + Gallery)
+            let allImages = [];
+            const mainSrc = car.imageName || "https://via.placeholder.com/1200x600?text=No+Image";
+            allImages.push(mainSrc); // Ảnh đại diện luôn đầu tiên
+
+            if (Array.isArray(car.gallery) && car.gallery.length > 0) {
+                // Lọc bỏ ảnh trùng nếu có
+                const galleryUnique = car.gallery.filter(img => img && img !== mainSrc);
+                allImages = allImages.concat(galleryUnique);
+            }
+
+            // 2. Render Slide & Chấm tròn
+            allImages.forEach((imgUrl, index) => {
+                const isActive = index === 0 ? 'active' : '';
+
+                // A. Tạo Dấu Chấm (Indicators)
+                // <button type="button" data-bs-target="#..." data-bs-slide-to="0" class="active"></button>
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.bsTarget = '#carGalleryCarousel';
+                btn.dataset.bsSlideTo = index;
+                btn.className = isActive;
+                btn.ariaLabel = `Slide ${index + 1}`;
+                if(isActive) btn.ariaCurrent = "true";
+                indicatorsEl.appendChild(btn);
+
+                // B. Tạo Slide Ảnh
+                const div = document.createElement('div');
+                div.className = `carousel-item ${isActive}`;
+                div.innerHTML = `<img src="${imgUrl}" class="d-block w-100" alt="Car Image ${index}">`;
+                innerEl.appendChild(div);
+            });
+
+        } catch (e) {
+            console.error(e);
+
   const urlParams = new URLSearchParams(window.location.search);
   const carId = urlParams.get("id");
   const currentUserStr = localStorage.getItem("currentUser");
@@ -404,46 +457,39 @@
         if (i === slotsToShow - 1 && sideImages.length > slotsToShow) {
           isMore = true;
           remaining = sideImages.length - slotsToShow + 1;
+
         }
-
-        const div = document.createElement("div");
-        div.className = "side-item";
-
-        div.onclick = function () {
-          if (i === slotsToShow - 1) openGalleryModal(allImages);
-          else swapImage(imgUrl);
-        };
-
-        let html = `<img src="${imgUrl}" alt="Sub">`;
-
-        if (isMore) html += `<div class="more-photos">+${remaining}</div>`;
-
-        if (i === slotsToShow - 1) {
-          html += `
-            <div class="view-all-btn">
-              <i class="fa-regular fa-images"></i>
-              Xem tất cả ảnh
-            </div>
-          `;
-        }
-
-        div.innerHTML = html;
-        sideContainer.appendChild(div);
-      }
-    } catch (e) {
-      console.error(e);
     }
-  }
 
-  function bookCar() {
-    if (!currentUserStr) window.location.href = "/auth/login.html";
-    else window.location.href = `/cars/booking.html?carId=${carId}`;
-  }
+    function bookCar() {
+        if (!currentUserStr) {
+            window.location.href = "/auth/login.html";
+            return;
+        }
 
-  function logout() {
-    localStorage.removeItem("currentUser");
-    window.location.href = "/index.html";
-  }
+        // Lấy giá trị ngày giờ người dùng chọn
+        // Lưu ý: ID này phải khớp với HTML ở Booking Widget
+        // Ở code HTML trước tôi chưa đặt ID cho 2 ô input này, bạn hãy thêm ID vào nhé:
+        // <input type="datetime-local" id="detailStartDate" ...>
+        // <input type="datetime-local" id="detailEndDate" ...>
+
+        // Nếu bạn dùng code mới nhất tôi gửi, hãy tìm đoạn Booking Widget và thêm ID vào input:
+        const startVal = document.getElementById('detailStartDate')?.value;
+        const endVal = document.getElementById('detailEndDate')?.value;
+
+        let url = `/cars/booking.html?carId=${carId}`;
+
+        // Nếu người dùng đã chọn ngày, nối thêm vào URL
+        if (startVal) url += `&start=${startVal}`;
+        if (endVal) url += `&end=${endVal}`;
+
+        window.location.href = url;
+    }
+
+    function logout() {
+        localStorage.removeItem("currentUser");
+        window.location.href = "/index.html";
+    }
 </script>
 </body>
 </html>

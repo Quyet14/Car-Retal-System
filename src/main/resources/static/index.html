@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Rental System - Thuê xe tự lái</title>
+    <title>Car Rental - Trải nghiệm tự do</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #f5a623; /* Cam Motogo */
-            --dark-color: #333;
-            --light-bg: #f8f9fa;
+            --primary-color: #3563E9;
+            --secondary-color: #54A6FF;
+            --accent-color: #f5a623;
+            --dark-text: #1A202C;
+            --light-text: #90A3BF;
+            --bg-color: #F6F7F9;
+            --card-bg: #FFFFFF;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-            color: var(--dark-color);
-            background-color: #fdfdfd;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+            overflow-x: hidden;
         }
 
-        /* Navbar Custom */
+        /* --- Navbar --- */
         .navbar {
             background: #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 15px 0;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .navbar-brand {
             font-weight: 800;
-            font-size: 26px;
+            font-size: 28px;
             color: var(--primary-color) !important;
-            letter-spacing: -0.5px;
+            text-transform: uppercase;
         }
         .nav-link {
             font-weight: 600;
-            color: var(--dark-color) !important;
-            margin: 0 10px;
+            color: var(--light-text) !important;
+            margin: 0 15px;
             transition: 0.3s;
         }
         .nav-link:hover, .nav-link.active {
@@ -47,157 +54,299 @@
             background-color: var(--primary-color);
             color: #fff;
             border: none;
-            padding: 10px 25px;
+            padding: 12px 28px;
             font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.3s;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
         .btn-primary-custom:hover {
-            background-color: #e09612;
+            background-color: #2952cc;
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(245, 166, 35, 0.4);
+            box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3);
         }
+
         .btn-outline-custom {
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
+            border: 1px solid rgba(0,0,0,0.1);
+            background: #fff;
+            color: var(--dark-text);
             font-weight: 600;
-            padding: 8px 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
         }
         .btn-outline-custom:hover {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            padding: 120px 0 160px 0;
-            color: #fff;
-            text-align: center;
-        }
-
-        /* Booking Widget (Thanh tìm kiếm nổi) */
-        .booking-widget {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            margin-top: -80px;
-            position: relative;
-            z-index: 10;
-        }
-        .form-label { font-weight: 600; color: #555; font-size: 0.9rem;}
-        .form-control, .form-select { padding: 12px; border: 1px solid #eee; background-color: #f9f9f9; }
-        .form-control:focus { border-color: var(--primary-color); box-shadow: none; background-color: #fff;}
-
-        /* Feature Box */
-        .feature-box {
-            padding: 30px;
-            text-align: center;
-            transition: 0.3s;
-            border: 1px solid transparent;
-            border-radius: 10px;
-        }
-        .feature-box:hover {
-            background: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transform: translateY(-5px);
-            border-color: #eee;
-        }
-        .feature-icon {
-            font-size: 40px;
+            border-color: var(--primary-color);
             color: var(--primary-color);
-            margin-bottom: 20px;
-            background: #fffbf0;
-            width: 80px;
-            height: 80px;
-            line-height: 80px;
-            border-radius: 50%;
         }
 
-        /* Car Card */
-        .car-card {
-            border: none;
-            border-radius: 12px;
+        /* --- Hero Section --- */
+        .hero-section {
+            padding: 60px 0;
+            position: relative;
+        }
+        .hero-card {
+            background: #54A6FF;
+            border-radius: 24px;
+            padding: 40px;
+            color: white;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            min-height: 360px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .hero-card.bg-primary-dark {
+            background: var(--primary-color);
+        }
+        .hero-card h2 {
+            font-weight: 700;
+            width: 60%;
+            line-height: 1.4;
+            font-size: 2rem;
+            z-index: 2;
+            position: relative;
+        }
+        .hero-card p {
+            width: 50%;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            z-index: 2;
+            position: relative;
+        }
+
+        /* Đưa nút bấm lên trên ảnh */
+        .hero-card .btn {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Đẩy ảnh xuống dưới và lùi ra sau */
+        .hero-card img {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 55%;
+            object-fit: contain;
+            z-index: 1;
+        }
+
+        /* --- Search Widget --- */
+        .search-container {
             background: #fff;
-            transition: 0.3s;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 50px;
+        }
+        .search-label {
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--dark-text);
+        }
+        .divider {
+            width: 1px;
+            height: 50px;
+            background: #e0e0e0;
+            margin: 0 20px;
+        }
+
+        /* --- Car Card --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
+            padding: 0 10px;
+        }
+        .section-title {
+            color: var(--light-text);
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .car-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            border: none;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .car-card:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
-        .car-img-wrapper {
-            height: 220px;
-            overflow: hidden;
+        .car-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
-        .car-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: 0.5s;
+        .car-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin: 0;
         }
-        .car-card:hover .car-img-wrapper img { transform: scale(1.05); }
-        .car-price { color: var(--primary-color); font-weight: 700; font-size: 1.2rem; }
+        .car-type {
+            font-size: 14px;
+            color: var(--light-text);
+            font-weight: 500;
+        }
 
-        /* Footer */
-        footer { background: #1a1a1a; color: #aaa; padding: 60px 0 20px 0; }
-        footer h5 { color: #fff; font-weight: 700; margin-bottom: 20px; }
-        footer a { color: #aaa; text-decoration: none; transition: 0.3s; }
-        footer a:hover { color: var(--primary-color); padding-left: 5px; }
 
-        /* User Menu Dropdown */
+        .car-image-container {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .car-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+        }
+
+        .car-specs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            color: var(--light-text);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .car-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .price-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+        .price-sub {
+            font-size: 14px;
+            color: var(--light-text);
+            font-weight: 500;
+        }
+
+        /* --- Consign Banner Effects (New) --- */
+        .consign-banner .btn-light:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+            background-color: #fff;
+            color: #2563eb !important;
+        }
+        .consign-banner img {
+            transition: transform 0.5s ease;
+        }
+        .consign-banner:hover img {
+            transform: scaleX(-1) scale(1.05) !important;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #fff;
+            padding-top: 60px;
+            padding-bottom: 30px;
+            margin-top: 60px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .footer-brand {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        .footer-desc {
+            color: var(--light-text);
+            max-width: 300px;
+            line-height: 1.6;
+        }
+        .footer-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark-text);
+        }
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+        .footer-links a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .footer-links a:hover { color: var(--primary-color); }
+
+        /* User Menu */
         .user-menu-btn {
-            background: none;
-            border: 2px solid #eee;
-            padding: 8px 15px;
+            border: 1px solid #eee;
+            padding: 8px 16px;
             border-radius: 30px;
+            background: white;
             font-weight: 600;
-            color: var(--dark-color);
+            color: var(--dark-text);
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .user-menu-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        @media (max-width: 768px) {
+            .hero-card { margin-bottom: 20px; min-height: 300px; }
+            .divider { display: none; }
+            .search-container .row > div { margin-bottom: 15px; }
+        }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="/index.html"><i class="fas fa-car-side me-2"></i>CAR RENTAL</a>
+        <a class="navbar-brand" href="/index.html">CarRental</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav ms-auto me-4">
                 <li class="nav-item"><a class="nav-link active" href="/index.html">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/cars/cars.html">Danh sách xe</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cars/cars.html">Thuê xe</a></li>
                 <li class="nav-item"><a class="nav-link" href="#features">Dịch vụ</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Liên hệ</a></li>
             </ul>
 
-            <div class="d-flex gap-2" id="navAuth">
-                <a href="/auth/login.html" class="btn btn-outline-dark">Đăng nhập</a>
-                <a href="/auth/register.html" class="btn btn-primary-custom">Đăng ký</a>
+            <div class="d-flex gap-3 align-items-center" id="navAuth">
+                <a href="/auth/register.html" class="fw-bold text-decoration-none text-dark">Đăng ký</a>
+                <a href="/auth/login.html" class="btn btn-primary-custom">Đăng nhập</a>
             </div>
 
             <div class="dropdown" id="navUser" style="display: none;">
-                <button class="user-menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-user-circle fa-lg"></i>
-                    <span id="userName">User Name</span> </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                    <li><a class="dropdown-item" href="/admin/dashboard.html" id="adminLink" style="display: none;"><i class="fas fa-tachometer-alt me-2 text-warning"></i>Admin Panel</a></li>
-                    <li><a class="dropdown-item" href="/profile/profile.html" id="profileBtn"><i class="fas fa-id-card me-2"></i>Tài khoản</a></li>
+                <button class="user-menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <img src="https://ui-avatars.com/api/?name=User&background=3563E9&color=fff" class="rounded-circle" width="30" alt="Avatar">
+                    <span id="userName">User</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2">
+                    <li><a class="dropdown-item rounded" href="/admin/dashboard.html" id="adminLink" style="display: none;"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Admin Panel</a></li>
+                    <li><a class="dropdown-item rounded" href="/profile/profile.html"><i class="fas fa-user me-2 text-primary"></i>Hồ sơ</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><button class="dropdown-item text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
+                    <li><button class="dropdown-item rounded text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
                 </ul>
             </div>
         </div>
@@ -206,34 +355,58 @@
 
 <section class="hero-section">
     <div class="container">
-        <h1 class="display-3 fw-bold mb-4">THUÊ XE DỄ DÀNG<br>LÁI XE THOẢI MÁI</h1>
-        <p class="lead mb-5 opacity-75">Hơn 1000+ xe chất lượng cao sẵn sàng phục vụ bạn trên mọi cung đường.</p>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="hero-card bg-primary-dark">
+                    <h2>Nền tảng thuê xe tự lái tốt nhất</h2>
+                    <p>An toàn và tin cậy. Giá cả hợp lý. Hỗ trợ 24/7 trên mọi nẻo đường.</p>
+                    <button class="btn btn-light text-primary fw-bold px-4 py-2 mt-2">Thuê Xe Ngay</button>
+                    <img src="https://freepngimg.com/thumb/car/4-2-car-png-hd.png" alt="Car White">
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-card">
+                    <h2>Dễ dàng thuê xe với mức giá thấp</h2>
+                    <p>Cung cấp dịch vụ cho thuê xe giá rẻ, thủ tục nhanh chóng, giao xe tận nơi.</p>
+                    <button class="btn btn-primary-custom mt-2">Xem Chi Tiết</button>
+
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="container mb-5">
-    <div class="booking-widget">
+<section class="container" style="margin-top: -30px; position: relative; z-index: 10;">
+    <div class="search-container">
         <form action="/cars/cars.html" method="GET">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i> Điểm nhận xe</label>
-                    <select class="form-select">
-                        <option selected>TP. Hồ Chí Minh</option>
+            <div class="row align-items-center">
+                <div class="col-lg-3 col-md-6">
+                    <label class="search-label"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Điểm nhận xe</label>
+                    <select class="form-select border-0 bg-light py-3 fw-bold text-secondary" style="font-size: 0.9rem;">
+                        <option selected>Chọn thành phố</option>
+                        <option>TP. Hồ Chí Minh</option>
                         <option>Hà Nội</option>
                         <option>Đà Nẵng</option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label"><i class="fas fa-calendar-alt me-1"></i> Ngày nhận</label>
-                    <input type="date" class="form-control">
+
+                <div class="col-auto d-none d-lg-block"><div class="divider"></div></div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="search-label"><i class="fas fa-calendar-alt me-2 text-primary"></i>Ngày nhận</label>
+                    <input type="date" class="form-control border-0 bg-light py-3 fw-bold text-secondary" style="font-size: 0.9rem;">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label"><i class="fas fa-calendar-check me-1"></i> Ngày trả</label>
-                    <input type="date" class="form-control">
+
+                <div class="col-auto d-none d-lg-block"><div class="divider"></div></div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="search-label"><i class="fas fa-calendar-check me-2 text-primary"></i>Ngày trả</label>
+                    <input type="date" class="form-control border-0 bg-light py-3 fw-bold text-secondary" style="font-size: 0.9rem;">
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary-custom w-100 py-2 fs-6">
-                        TÌM XE NGAY <i class="fas fa-arrow-right ms-2"></i>
+
+                <div class="col-lg-2 col-md-12 mt-3 mt-lg-0">
+                    <button type="submit" class="btn btn-primary-custom w-100 h-100 shadow-sm" style="padding: 15px;">
+                        <i class="fas fa-search me-2"></i>Tìm xe
                     </button>
                 </div>
             </div>
@@ -241,129 +414,199 @@
     </div>
 </section>
 
-<section id="features" class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h6 class="text-warning fw-bold text-uppercase">Tại sao chọn chúng tôi?</h6>
-            <h2 class="fw-bold">Dịch Vụ Vượt Trội</h2>
+<section class="container mb-5">
+    <div class="section-header">
+        <span class="section-title">Xe Phổ Biến</span>
+        <a href="/cars/cars.html" class="fw-bold text-primary text-decoration-none">Xem tất cả</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="car-card">
+                <div class="car-header">
+                    <div>
+                        <h5 class="car-title">Koenigsegg</h5>
+                        <span class="car-type">Sport</span>
+                    </div>
+
+                </div>
+                <div class="car-image-container">
+                    <img src="https://freepngimg.com/download/vehicle/93770-renegade-tire-jeep-automotive-2018-exterior.png" alt="Koenigsegg">
+                </div>
+                <div class="car-specs">
+                    <div class="spec-item"><i class="fas fa-gas-pump"></i> 90L</div>
+                    <div class="spec-item"><i class="fas fa-circle-notch"></i> Manual</div>
+                    <div class="spec-item"><i class="fas fa-user-friends"></i> 2 People</div>
+                </div>
+                <div class="car-footer">
+                    <div>
+                        <span class="price-text">$99.00</span><span class="price-sub">/ngày</span>
+                    </div>
+                    <a href="/cars/cars.html" class="btn btn-primary-custom btn-sm px-3">Thuê ngay</a>
+                </div>
+            </div>
         </div>
 
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="car-card">
+                <div class="car-header">
+                    <div>
+                        <h5 class="car-title">Nissan GT-R</h5>
+                        <span class="car-type">Sport</span>
+                    </div>
+
+                </div>
+                <div class="car-image-container">
+                    <img src="https://freepngimg.com/thumb/car/8-2-car-png-clipart.png" alt="Nissan">
+                </div>
+                <div class="car-specs">
+                    <div class="spec-item"><i class="fas fa-gas-pump"></i> 80L</div>
+                    <div class="spec-item"><i class="fas fa-circle-notch"></i> Manual</div>
+                    <div class="spec-item"><i class="fas fa-user-friends"></i> 2 People</div>
+                </div>
+                <div class="car-footer">
+                    <div>
+                        <span class="price-text">$80.00</span><span class="price-sub">/ngày</span>
+                        <div class="text-decoration-line-through text-muted small">$100.00</div>
+                    </div>
+                    <a href="/cars/cars.html" class="btn btn-primary-custom btn-sm px-3">Thuê ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="car-card">
+                <div class="car-header">
+                    <div>
+                        <h5 class="car-title">Rolls-Royce</h5>
+                        <span class="car-type">Sedan</span>
+                    </div>
+
+                </div>
+                <div class="car-image-container">
+                    <img src="https://freepngimg.com/thumb/car/1-2-car-png-picture.png" alt="Rolls">
+                </div>
+                <div class="car-specs">
+                    <div class="spec-item"><i class="fas fa-gas-pump"></i> 70L</div>
+                    <div class="spec-item"><i class="fas fa-circle-notch"></i> Manual</div>
+                    <div class="spec-item"><i class="fas fa-user-friends"></i> 4 People</div>
+                </div>
+                <div class="car-footer">
+                    <div>
+                        <span class="price-text">$96.00</span><span class="price-sub">/ngày</span>
+                    </div>
+                    <a href="/cars/cars.html" class="btn btn-primary-custom btn-sm px-3">Thuê ngay</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="car-card">
+                <div class="car-header">
+                    <div>
+                        <h5 class="car-title">All New Rush</h5>
+                        <span class="car-type">SUV</span>
+                    </div>
+
+                </div>
+                <div class="car-image-container">
+                    <img src="https://freepngimg.com/thumb/audi/7-2-audi-png-image-thumb.png" alt="SUV">
+                </div>
+                <div class="car-specs">
+                    <div class="spec-item"><i class="fas fa-gas-pump"></i> 70L</div>
+                    <div class="spec-item"><i class="fas fa-circle-notch"></i> Manual</div>
+                    <div class="spec-item"><i class="fas fa-user-friends"></i> 6 People</div>
+                </div>
+                <div class="car-footer">
+                    <div>
+                        <span class="price-text">$72.00</span><span class="price-sub">/ngày</span>
+                        <div class="text-decoration-line-through text-muted small">$80.00</div>
+                    </div>
+                    <a href="/cars/cars.html" class="btn btn-primary-custom btn-sm px-3">Thuê ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="/cars/cars.html" class="btn btn-outline-custom px-5">Hiển thị thêm xe</a>
+    </div>
+</section>
+
+<section class="consign-banner py-5 mt-5">
+    <div class="container">
+        <div class="row align-items-center bg-primary rounded-4 p-4 p-lg-5 position-relative overflow-hidden">
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(45deg, rgba(0,0,0,0.2) 0%, transparent 100%);"></div>
+            <div class="position-absolute top-0 end-0 w-50 h-100 bg-white opacity-10" style="transform: skewX(-20deg) translateX(50%); opacity: 0.1;"></div>
+
+            <div class="col-lg-6 position-relative z-1 text-white">
+                <h2 class="fw-bold display-6 mb-3">Bạn muốn kiếm thêm thu nhập?</h2>
+                <p class="lead mb-4" style="opacity: 0.9;">
+                    Đừng để chiếc xe của bạn nằm không lãng phí.
+                    <br>Hợp tác với chúng tôi để biến nó thành nguồn thu nhập thụ động ngay hôm nay!
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/cars/consign.html" class="btn btn-light btn-lg fw-bold px-4 text-primary shadow-sm">
+                        <i class="fas fa-car-side me-2"></i>Ký gửi xe ngay
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-lg fw-bold px-4">
+                        Tìm hiểu thêm
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 position-relative z-1 mt-4 mt-lg-0 text-center">
+                <img src="https://freepngimg.com/thumb/car/4-2-car-png-hd.png"
+                     alt="Consign Car"
+                     class="img-fluid"
+                     style="max-height: 280px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); transform: scaleX(-1);">
+            </div>
+        </div>
+    </div>
+</section>
+<footer>
+    <div class="container">
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="fas fa-car"></i></div>
-                    <h4>Đa dạng dòng xe</h4>
-                    <p class="text-muted">Hơn 1000+ mẫu xe đời mới từ phổ thông đến hạng sang, đáp ứng mọi nhu cầu di chuyển.</p>
-                </div>
+            <div class="col-lg-4">
+                <div class="footer-brand">CarRental</div>
+                <p class="footer-desc">
+                    Tầm nhìn của chúng tôi là mang đến sự tiện lợi và giúp tăng giá trị cho doanh nghiệp cho thuê xe của bạn.
+                </p>
             </div>
-            <div class="col-md-4">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
-                    <h4>Đặt xe siêu tốc</h4>
-                    <p class="text-muted">Chỉ với 3 bước đơn giản trên website, bạn đã có thể nhận xe ngay trong vòng 5 phút.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-box">
-                    <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
-                    <h4>An toàn tuyệt đối</h4>
-                    <p class="text-muted">Xe được bảo dưỡng chính hãng định kỳ, gói bảo hiểm toàn diện 2 chiều an tâm.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="bg-light py-5">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <h2 class="fw-bold">Xe Nổi Bật</h2>
-                <p class="text-muted mb-0">Những mẫu xe được khách hàng yêu thích nhất</p>
-            </div>
-            <a href="/cars/cars.html" class="btn btn-outline-dark">Xem tất cả <i class="fas fa-arrow-right ms-1"></i></a>
-        </div>
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="car-card">
-                    <div class="car-img-wrapper">
-                        <img src="https://media.vietnamplus.vn/images/c14f6479e83e315b4cf3a2906cc6a51e54f67f81d366b6f8875314c5c33e12e8000518577877d73bd7de4ed129dc0b08befa068a70ce43de2b97fa956da2e37da100cbccbebd1913020c848d5e0c7e577bad23fef99d3fabdb4c336a9c541fdeb81cc02e8ad39d0721b4417e86f96300/5c13378d057c480a8e98c64a413e20613682161636517973.jpg.webp" alt="Car">
-                    </div>
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold">Honda Civic 2024</h5>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="badge bg-light text-dark border">Tự động</span>
-                            <span class="car-price">800.000đ<small class="text-muted fw-normal">/ngày</small></span>
-                        </div>
-                        <hr class="my-3 opacity-25">
-                        <a href="/cars/cars.html" class="btn btn-primary-custom w-100">Đặt Xe Ngay</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="car-card">
-                    <div class="car-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=500&q=60" alt="Car">
-                    </div>
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold">Mazda 3 Luxury</h5>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="badge bg-light text-dark border">Tự động</span>
-                            <span class="car-price">950.000đ<small class="text-muted fw-normal">/ngày</small></span>
-                        </div>
-                        <hr class="my-3 opacity-25">
-                        <a href="/cars/cars.html" class="btn btn-primary-custom w-100">Đặt Xe Ngay</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="car-card">
-                    <div class="car-img-wrapper">
-                        <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=500&q=60" alt="Car">
-                    </div>
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold">Toyota Fortuner</h5>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="badge bg-light text-dark border">Số sàn</span>
-                            <span class="car-price">1.200.000đ<small class="text-muted fw-normal">/ngày</small></span>
-                        </div>
-                        <hr class="my-3 opacity-25">
-                        <a href="/cars/cars.html" class="btn btn-primary-custom w-100">Đặt Xe Ngay</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer id="contact">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 mb-4">
-                <h5 class="text-warning">CAR RENTAL</h5>
-                <p class="small">Hệ thống cho thuê xe tự lái hàng đầu với hơn 5 năm kinh nghiệm. Chúng tôi cam kết mang đến sự hài lòng tuyệt đối cho mọi hành trình của bạn.</p>
-            </div>
-            <div class="col-lg-4 mb-4">
-                <h5>THÔNG TIN LIÊN HỆ</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-warning"></i> 364 Đ. Cộng Hòa, Tân Bình, TP.HCM</li>
-                    <li class="mb-2"><i class="fas fa-phone me-2 text-warning"></i> 1900 xxxx</li>
-                    <li class="mb-2"><i class="fas fa-envelope me-2 text-warning"></i> contact@carrental.vn</li>
+            <div class="col-lg-2 col-6">
+                <h5 class="footer-title">Về chúng tôi</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#">Giới thiệu</a></li>
+                    <li><a href="#">Cách hoạt động</a></li>
+                    <li><a href="#">Nổi bật</a></li>
+                    <li><a href="#">Đối tác</a></li>
                 </ul>
             </div>
-            <div class="col-lg-4 mb-4">
-                <h5>GỬI TIN NHẮN</h5>
-                <form class="d-flex gap-2">
-                    <input type="email" class="form-control form-control-sm" placeholder="Email của bạn...">
-                    <button class="btn btn-primary-custom btn-sm">Gửi</button>
-                </form>
+            <div class="col-lg-2 col-6">
+                <h5 class="footer-title">Cộng đồng</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#">Sự kiện</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Podcast</a></li>
+                    <li><a href="#">Mời bạn bè</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-6">
+                <h5 class="footer-title">Mạng xã hội</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#">Discord</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Facebook</a></li>
+                </ul>
             </div>
         </div>
-        <div class="border-top border-secondary pt-4 mt-4 text-center small text-secondary">
-            <p>&copy; 2025 Car Rental System. All rights reserved. | Developed by You</p>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 pt-4 border-top">
+            <p class="mb-0 fw-bold">©2025 CarRental. All rights reserved</p>
+            <div class="d-flex gap-4">
+                <a href="#" class="text-dark fw-bold text-decoration-none">Chính sách bảo mật</a>
+                <a href="#" class="text-dark fw-bold text-decoration-none">Điều khoản sử dụng</a>
+            </div>
         </div>
     </div>
 </footer>
@@ -372,44 +615,27 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Lấy dữ liệu từ bộ nhớ
         const currentUserStr = localStorage.getItem('currentUser');
-        console.log("Dữ liệu user trong kho:", currentUserStr); // Kiểm tra xem có gì không
-
         const navAuth = document.getElementById('navAuth');
         const navUser = document.getElementById('navUser');
         const userName = document.getElementById('userName');
         const adminLink = document.getElementById('adminLink');
 
-        // 2. Logic hiển thị
         if (currentUserStr) {
             try {
                 const user = JSON.parse(currentUserStr);
-
-                // Nếu parse thành công, ẨN NGAY nút đăng nhập
-                if (navAuth) navAuth.style.display = 'none'; // Bootstrap dùng d-flex nên cần override mạnh
-                if (navAuth) navAuth.classList.remove('d-flex'); // Xóa class d-flex để chắc chắn ẩn
-
-                // HIỆN menu user
+                if (navAuth) navAuth.style.display = 'none';
+                if (navAuth) navAuth.classList.remove('d-flex');
                 if (navUser) navUser.style.display = 'block';
-
-                // Hiển thị tên (Xử lý trường hợp tên bị null)
-                const fullName = (user.firstName && user.lastName)
-                               ? `${user.firstName} ${user.lastName}`
-                               : (user.email || "Khách hàng");
+                const fullName = (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : (user.email || "Khách hàng");
                 if (userName) userName.textContent = fullName;
-
-                // Check Admin
                 if (user.roles && user.roles.includes('Admin')) {
                     if (adminLink) adminLink.style.display = 'block';
                 }
             } catch (e) {
-                console.error('Lỗi đọc dữ liệu user:', e);
-                // Nếu lỗi JSON, xóa luôn cho sạch để lần sau đăng nhập lại
                 localStorage.removeItem('currentUser');
             }
         } else {
-            // Không có user -> Hiện nút đăng nhập
             if (navAuth) navAuth.style.display = 'flex';
             if (navUser) navUser.style.display = 'none';
         }
