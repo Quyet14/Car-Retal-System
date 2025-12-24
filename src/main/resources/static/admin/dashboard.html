@@ -8,10 +8,29 @@
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
+
 <nav class="admin-navbar">
     <div class="container">
         <div class="nav-brand">
             <h1>🚗 Admin Panel</h1>
+
+    <!-- Admin Navigation -->
+    <nav class="admin-navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>Quản lý xe</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="/admin/dashboard.html" class="nav-link active">Tổng quan</a>
+                <a href="/admin/cars.html" class="nav-link">Xe</a>
+                <a href="/admin/reservations.html" class="nav-link">Đơn thuê</a>
+                <a href="/admin/users.html" class="nav-link">Người dùng</a>
+            </div>
+            <div class="nav-user">
+                <span class="user-name" id="adminName">Admin</span>
+                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+            </div>
+
         </div>
         <div class="nav-menu">
             <a href="/admin/dashboard.html" class="nav-link active">Dashboard</a>
@@ -32,6 +51,7 @@
 <section class="admin-section">
     <div class="container">
         <h1>Dashboard</h1>
+
 
         <div class="stats-grid">
             <div class="stat-card" onclick="window.location.href='/admin/pending-cars.html'" style="cursor: pointer; border-left: 5px solid #ffc107;">
@@ -61,14 +81,55 @@
                 <div class="stat-info">
                     <h3 id="totalRevenue">0 VNĐ</h3>
                     <p>Doanh thu</p>
+
+    <!-- Dashboard Content -->
+    <section class="admin-section">
+        <div class="container">
+            <h1>Tổng quan</h1>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalCars">0</h3>
+                        <p>Tổng số xe</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalReservations">0</h3>
+                        <p>Đơn thuê xe</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Người dùng</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3 id="totalRevenue">0 VNĐ</h3>
+                        <p>Doanh thu</p>
+                    </div>
+
                 </div>
             </div>
         </div>
+
 
         <div class="admin-card">
             <h2>Đơn thuê xe gần đây</h2>
             <div id="recentReservations" class="table-container">
                 <div class="loading">Đang tải...</div>
+
+            <!-- Recent Reservations -->
+            <div class="admin-card">
+                <h2>Đơn thuê gần đây</h2>
+                <div id="recentReservations" class="table-container">
+                    <div class="loading">Đang tải...</div>
+                </div>
+
             </div>
         </div>
     </div>

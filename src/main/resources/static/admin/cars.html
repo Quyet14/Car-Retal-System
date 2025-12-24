@@ -10,11 +10,11 @@
 <body>
 <nav class="admin-navbar">
     <div class="container">
-        <div class="nav-brand"><h1>🚗 Admin Panel</h1></div>
+        <div class="nav-brand"><h1>Quản lý xe</h1></div>
         <div class="nav-menu">
-            <a href="/admin/dashboard.html" class="nav-link">Dashboard</a>
-            <a href="/admin/cars.html" class="nav-link active">Quản lý xe</a>
-            <a href="/admin/reservations.html" class="nav-link">Đơn thuê xe</a>
+            <a href="/admin/dashboard.html" class="nav-link">Tổng quan</a>
+            <a href="/admin/cars.html" class="nav-link active">Xe</a>
+            <a href="/admin/reservations.html" class="nav-link">Đơn thuê</a>
         </div>
         <div class="nav-user">
             <span class="user-name" id="adminName">Admin</span>
@@ -26,8 +26,8 @@
 <section class="admin-section">
     <div class="container">
         <div class="admin-header">
-            <h1>Quản lý xe</h1>
-            <button class="btn btn-primary" onclick="showAddCarModal()">+ Thêm xe mới</button>
+            <h1>Danh sách xe</h1>
+            <button class="btn btn-primary" onclick="showAddCarModal()">Thêm xe mới</button>
         </div>
 
         <div class="admin-filters">
@@ -106,14 +106,18 @@
             </div>
             <div class="form-group" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
                 <label style="font-weight: bold;">1. Ảnh đại diện (Thumbnail)</label>
+
+            <div class="form-group" style="margin-top: 15px; border-top: 1px solid #E5E7EB; padding-top: 15px;">
+                <label>Ảnh đại diện</label>
+
                 <input type="file" id="imageFile" accept="image/*" class="form-input">
                 <input type="hidden" id="imageUrl">
             </div>
 
             <div class="form-group">
-                <label style="font-weight: bold; color: #f5a623;">2. Bộ sưu tập ảnh (Gallery)</label>
+                <label>Bộ sưu tập ảnh</label>
                 <input type="file" id="galleryFiles" accept="image/*" multiple class="form-input">
-                <small style="color: #666; font-size: 0.85em;">Giữ phím Ctrl để chọn nhiều ảnh.</small>
+                <small style="color: #6B7280; font-size: 0.875rem;">Có thể chọn nhiều ảnh cùng lúc</small>
             </div>
 
             <div id="carMessage" class="message"></div>
@@ -122,6 +126,6 @@
     </div>
 </div>
 
-<script src="/js/admin-cars.js"></script>
+<script src="/js/admin-cars.js?v=2"></script>
 </body>
 </html>

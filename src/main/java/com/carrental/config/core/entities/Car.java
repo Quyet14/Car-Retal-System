@@ -56,6 +56,10 @@ public class Car {
     @Column(name = "Amount", nullable = false)
     private Double amount;
 
+    // Tạm thời comment isDeleted
+    // @Column(name = "IsDeleted", nullable = false)
+    // private Boolean isDeleted = false;
+
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Reservation> reservations = new HashSet<>();

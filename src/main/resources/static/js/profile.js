@@ -125,12 +125,35 @@ async function loadReservations() {
         </div>`;
 
     try {
+
         const response = await fetch('/api/reservations', { credentials: 'include' });
+
+        // Get current user info
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        const data = {
+            email: currentUser.email,
+            firstName: currentUser.firstName,
+            lastName: currentUser.lastName,
+            country: currentUser.country,
+            currentPassword: currentPassword, // Gửi mật khẩu hiện tại
+            password: newPassword
+        };
+
+        const response = await fetch(`${API_URL}/api/auth/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
 
         if (response.ok) {
             const bookings = await response.json();
             renderBookings(bookings, container);
         } else {
+
             // Mock Data nếu API chưa sẵn sàng (để bạn xem giao diện)
             console.warn("API chưa có, dùng dữ liệu mẫu.");
             const mockData = [
@@ -138,6 +161,10 @@ async function loadReservations() {
                 { id: 2, carName: "Mazda 3 Luxury", startDate: "2023-11-15", endDate: "2023-11-16", totalPrice: 1200000, status: "COMPLETED", carImage: "https://via.placeholder.com/150", pickupLocation: "Hà Nội" }
             ];
             renderBookings(mockData, container);
+
+            const error = await response.text();
+            alert('Đổi mật khẩu thất bại: ' + error);
+
         }
     } catch (error) {
         console.error("Lỗi load đơn:", error);

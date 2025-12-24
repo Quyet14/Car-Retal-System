@@ -141,6 +141,7 @@ public class CarController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Double maxPrice
     ) {
+        // Lấy tất cả xe (tạm thời bỏ filter isDeleted)
         List<Car> cars = carRepository.findAll();
 
         List<CarResponse> response = cars.stream()

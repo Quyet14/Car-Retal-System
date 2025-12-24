@@ -88,6 +88,30 @@ function displayCars(cars) {
                 </tr>
             </thead>
             <tbody>
+
+                ${cars.map(car => {
+                    // Fix image path: add /uploads/ if missing
+                    let imgSrc = car.imageName || '';
+                    if (imgSrc && !imgSrc.startsWith('/') && !imgSrc.startsWith('http')) {
+                        imgSrc = '/uploads/' + imgSrc;
+                    }
+                    return `
+                    <tr>
+                        <td>${car.id}</td>
+                        <td><img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/60x40?text=No+Image'" style="width:60px; height:40px; object-fit:cover; border-radius:4px;"></td>
+                        <td>${car.make?.name || car.make} <br> <small>${car.model}</small></td>
+                        <td>${car.year}</td>
+                        <td>${new Intl.NumberFormat('vi-VN').format(car.amount)}</td>
+                        <td class="actions">
+                            <button class="btn-icon" onclick="editCar(${car.id})">✏️</button>
+                            <button class="btn-icon" onclick="deleteCar(${car.id})">🗑️</button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+
     `;
 
     html += cars.map(car => {

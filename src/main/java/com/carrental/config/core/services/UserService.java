@@ -31,7 +31,6 @@ public class  UserService {
     private final UserMapper userMapper;
     private final IEmailConfirmationService emailConfirmationService;
     private final ICountryService countryService;
-
     private final RoleRepository roleRepository;
 
     private void publishNotification(UserNotification notification) {
@@ -155,11 +154,19 @@ public class  UserService {
 
         userMapper.updateEntityFromCommand(request, user);
 
+        // Cập nhật mật khẩu nếu có (bất kể email có thay đổi hay không)
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            // Kiểm tra mật khẩu hiện tại nếu có currentPassword
+            if (request.getCurrentPassword() != null && !request.getCurrentPassword().isEmpty()) {
+                if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+                    return Result.failure(new Error("Password.Invalid", "Mật khẩu hiện tại không đúng"));
+                }
+            }
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+
         if (emailChanged) {
             user.setEmailConfirmed(false);
-            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-                user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-            }
         }
 
         userRepository.save(user);

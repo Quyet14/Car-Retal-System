@@ -11,12 +11,12 @@
     <nav class="admin-navbar">
         <div class="container">
             <div class="nav-brand">
-                <h1>🚗 Admin Panel</h1>
+                <h1>Quản lý xe</h1>
             </div>
             <div class="nav-menu">
-                <a href="/admin/dashboard.html" class="nav-link">Dashboard</a>
-                <a href="/admin/cars.html" class="nav-link">Quản lý xe</a>
-                <a href="/admin/reservations.html" class="nav-link">Đơn thuê xe</a>
+                <a href="/admin/dashboard.html" class="nav-link">Tổng quan</a>
+                <a href="/admin/cars.html" class="nav-link">Xe</a>
+                <a href="/admin/reservations.html" class="nav-link">Đơn thuê</a>
                 <a href="/admin/users.html" class="nav-link active">Người dùng</a>
             </div>
             <div class="nav-user">
@@ -28,7 +28,7 @@
 
     <section class="admin-section">
         <div class="container">
-            <h1>Quản lý người dùng</h1>
+            <h1>Danh sách người dùng</h1>
 
             <!-- Filters -->
             <div class="admin-filters">
@@ -36,47 +36,19 @@
                 <select id="filterRole" class="form-input">
                     <option value="">Tất cả vai trò</option>
                     <option value="Admin">Admin</option>
-                    <option value="Client">Client</option>
+                    <option value="Client">Khách hàng</option>
                 </select>
             </div>
 
             <!-- Users Table -->
             <div class="admin-card">
                 <div id="usersTable" class="table-container">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👥</div>
-                        <p>Chức năng quản lý người dùng đang được phát triển</p>
-                        <p style="color: var(--text-secondary); margin-top: 1rem;">
-                            Hiện tại bạn có thể quản lý người dùng trực tiếp trong database
-                        </p>
-                    </div>
+                    <div class="loading">Đang tải...</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <script>
-        // Check admin auth
-        const user = localStorage.getItem('currentUser');
-        if (!user) {
-            alert('Vui lòng đăng nhập');
-            window.location.href = '/auth/login.html';
-        } else {
-            const userData = JSON.parse(user);
-            if (!userData.roles || !userData.roles.includes('Admin')) {
-                alert('Bạn không có quyền truy cập');
-                window.location.href = '/index.html';
-            }
-            document.getElementById('adminName').textContent = `${userData.firstName} ${userData.lastName}`;
-        }
-
-        function logout() {
-            fetch('/api/auth/logout', { credentials: 'include' })
-                .finally(() => {
-                    localStorage.removeItem('currentUser');
-                    window.location.href = '/index.html';
-                });
-        }
-    </script>
+    <script src="/js/admin-users.js"></script>
 </body>
 </html>
