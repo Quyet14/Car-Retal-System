@@ -1,6 +1,14 @@
 // Admin Dashboard JavaScript
 
+// Safety: Remove duplicate admin navs if present (keeps only the first)
 document.addEventListener('DOMContentLoaded', () => {
+    const navs = document.querySelectorAll('nav.admin-navbar');
+    if (navs && navs.length > 1) {
+        navs.forEach((n, idx) => {
+            if (idx > 0) n.remove();
+        });
+    }
+
     checkAdminAuth();
     loadDashboardStats();
     loadRecentReservations();
@@ -13,105 +21,127 @@ function checkAdminAuth() {
         window.location.href = '/auth/login.html';
         return;
     }
-    
+
     const userData = JSON.parse(user);
-    
+
     // Check if user has Admin role
     if (!userData.roles || !userData.roles.includes('Admin')) {
         alert('Bạn không có quyền truy cập trang này');
         window.location.href = '/index.html';
         return;
     }
-    
-    document.getElementById('adminName').textContent = `${userData.firstName} ${userData.lastName}`;
-}
 
-async function loadDashboardStats() {
-    try {
-        // Load cars count
-        const carsResponse = await fetch('/api/cars', { credentials: 'include' });
-        if (carsResponse.ok) {
-            const cars = await carsResponse.json();
-            document.getElementById('totalCars').textContent = cars.length;
-        }
-
-        // Load reservations count
-        const reservationsResponse = await fetch('/api/reservations/all', { credentials: 'include' });
-        if (reservationsResponse.ok) {
-            const reservations = await reservationsResponse.json();
-            document.getElementById('totalReservations').textContent = reservations.length;
-            
-            // Calculate revenue
-            const revenue = reservations.reduce((sum, r) => sum + (r.totalPrice || 0), 0);
-            document.getElementById('totalRevenue').textContent = formatPrice(revenue);
-        } else {
-            // Fallback if endpoint doesn't exist
-            document.getElementById('totalReservations').textContent = '-';
-            document.getElementById('totalRevenue').textContent = '-';
-        }
-
-        // Users count (mock for now)
-        document.getElementById('totalUsers').textContent = '-';
-    } catch (error) {
-        console.error('Error loading stats:', error);
+    if (document.getElementById('adminName')) {
+        document.getElementById('adminName').textContent = `${userData.firstName} ${userData.lastName}`;
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    checkAdminAuth(); // Hàm check quyền admin cũ của bạn
-    loadDashboardStats();
-    loadRecentReservations();
-});
-
 async function loadDashboardStats() {
-    // 1. Load các thống kê cũ (Giữ nguyên logic cũ của bạn)
-    // Ví dụ: gọi API /api/admin/stats ...
-
-    // 2. THÊM MỚI: Load số lượng xe chờ duyệt
+    // Load all stats in parallel where possible
     try {
-        // Gọi API lấy danh sách xe PENDING mà chúng ta vừa tạo ở bước trước
-        const res = await fetch('/api/admin/cars/pending', { credentials: 'include' });
-        if (res.ok) {
-            const pendingCars = await res.json();
-            const count = pendingCars.length;
+        // Parallel fetches
+        const [carsRes, reservationsRes, pendingRes, usersRes] = await Promise.allSettled([
+            fetch('/api/cars', { credentials: 'include' }),
+            fetch('/api/reservations/all', { credentials: 'include' }),
+            fetch('/api/admin/cars/pending', { credentials: 'include' }),
+            fetch('/api/admin/users', { credentials: 'include' })
+        ]);
 
-            // Cập nhật số liệu trên Card Dashboard
-            const pendingEl = document.getElementById('totalPending');
-            if (pendingEl) pendingEl.innerText = count;
+        // Helper: safe length for responses that should be arrays
+        const safeLength = (x) => Array.isArray(x) ? x.length : 0;
 
-            // Cập nhật Badge đỏ trên Menu (nếu có xe chờ duyệt)
-            const badge = document.getElementById('navPendingBadge');
-            if (badge) {
-                badge.innerText = count;
-                badge.style.display = count > 0 ? 'inline-block' : 'none';
+        // Cars
+        if (carsRes.status === 'fulfilled' && carsRes.value.ok) {
+            const cars = await carsRes.value.json();
+            const el = document.getElementById('totalCars');
+            if (el) {
+                if (Array.isArray(cars)) {
+                    el.textContent = cars.length;
+                } else {
+                    console.warn('/api/cars returned unexpected payload:', cars);
+                    el.textContent = '0';
+                }
             }
+        } else {
+            const el = document.getElementById('totalCars'); if (el) el.textContent = '-';
         }
-    } catch (error) {
-        console.error("Lỗi tải thống kê xe chờ duyệt:", error);
+
+        // Reservations + revenue
+        if (reservationsRes.status === 'fulfilled' && reservationsRes.value.ok) {
+            const reservations = await reservationsRes.value.json();
+            const elCount = document.getElementById('totalReservations');
+            const elRev = document.getElementById('totalRevenue');
+
+            if (Array.isArray(reservations)) {
+                if (elCount) elCount.textContent = reservations.length;
+                const revenue = reservations.reduce((s, r) => s + (r.totalPrice || 0), 0);
+                if (elRev) elRev.textContent = formatPrice(revenue);
+            } else {
+                console.warn('/api/reservations/all returned unexpected payload:', reservations);
+                if (elCount) elCount.textContent = '0';
+                if (elRev) elRev.textContent = '0';
+            }
+        } else {
+            const elCount = document.getElementById('totalReservations'); if (elCount) elCount.textContent = '-';
+            const elRev = document.getElementById('totalRevenue'); if (elRev) elRev.textContent = '-';
+        }
+
+        // Pending
+        if (pendingRes.status === 'fulfilled' && pendingRes.value.ok) {
+            const pending = await pendingRes.value.json();
+            const el = document.getElementById('totalPending');
+            const badge = document.getElementById('navPendingBadge');
+            if (Array.isArray(pending)) {
+                if (el) el.textContent = pending.length;
+                if (badge) { badge.innerText = pending.length; badge.style.display = pending.length > 0 ? 'inline-block' : 'none'; }
+            } else {
+                console.warn('/api/admin/cars/pending returned unexpected payload:', pending);
+                if (el) el.textContent = '0';
+                if (badge) { badge.innerText = '0'; badge.style.display = 'none'; }
+            }
+        } else {
+            const el = document.getElementById('totalPending'); if (el) el.textContent = '0';
+        }
+
+        // Users
+        if (usersRes.status === 'fulfilled' && usersRes.value.ok) {
+            const users = await usersRes.value.json();
+            const el = document.getElementById('totalUsers');
+            if (Array.isArray(users)) {
+                if (el) el.textContent = users.length;
+            } else {
+                console.warn('/api/admin/users returned unexpected payload:', users);
+                if (el) el.textContent = '0';
+            }
+        } else {
+            const el = document.getElementById('totalUsers'); if (el) el.textContent = '-';
+        }
+
+    } catch (err) {
+        console.error('Error loading dashboard stats:', err);
     }
 }
 
 async function loadRecentReservations() {
     const container = document.getElementById('recentReservations');
-    
+    if (!container) return;
+
     try {
         const response = await fetch('/api/reservations/all', { credentials: 'include' });
-        
+
         if (!response.ok) {
             container.innerHTML = '<p class="empty-state">Không thể tải dữ liệu</p>';
             return;
         }
 
         const reservations = await response.json();
-        
-        if (reservations.length === 0) {
+        if (!reservations || reservations.length === 0) {
             container.innerHTML = '<p class="empty-state">Chưa có đơn thuê xe nào</p>';
             return;
         }
 
-        // Show only 5 most recent
         const recent = reservations.slice(0, 5);
-        
+
         container.innerHTML = `
             <table class="admin-table">
                 <thead>

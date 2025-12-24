@@ -76,6 +76,7 @@ public class AdminReservationController {
                 .startDate(reservation.getStartDate())
                 .endDate(reservation.getEndDate())
                 .status(statusText)
+                .statusCode(reservation.getStatus() != null ? reservation.getStatus().name() : null)
                 .dailyRate(car.getAmount())
                 .totalPrice(reservation.getTotalPrice())
                 .days((int) days)

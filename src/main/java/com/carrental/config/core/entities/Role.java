@@ -5,22 +5,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Roles")
-
-@Getter
-@Setter
 public class Role {
 
     @Id
-    @Column(name = "Id", columnDefinition = "NVARCHAR(450)")
+    @Column(name = "Id", columnDefinition = "NVARCHAR(450)", length = 450)
     private String id;
 
-    @Column(name = "Name", length = 256)
+    @Column(name = "Name", length = 256, unique = true)
     private String name;
 
     @Column(name = "NormalizedName", length = 256)
@@ -29,24 +25,6 @@ public class Role {
     @Column(name = "ConcurrencyStamp")
     private String concurrencyStamp;
 
-    @ManyToMany(mappedBy = "roleEntities")
-    private Set<ApplicationUser> users = new HashSet<>();
-
-public class Role {
-    @Id
-    @Column(length = 450)
-    private String id;
-
-    @Column(length = 256, unique = true)
-    private String name;
-
-    @Column(length = 256)
-    private String normalizedName;
-
-    @Column
-    private String concurrencyStamp;
-
-    // Quan hệ ManyToMany với User
     @ManyToMany(mappedBy = "roleEntities")
     private Set<ApplicationUser> users = new HashSet<>();
 

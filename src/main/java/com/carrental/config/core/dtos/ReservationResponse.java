@@ -19,6 +19,7 @@ public class ReservationResponse {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;
+    private String statusCode;
     private Double dailyRate;
     private Double totalPrice;
     private Integer days;

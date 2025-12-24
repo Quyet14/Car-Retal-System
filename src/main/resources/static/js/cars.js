@@ -102,12 +102,14 @@ async function loadCars() {
                 fuel: car.fuel || 'Xăng'
             }));
             filteredCars = [...allCars];
-            displayCars();
+            // Apply any active sort option immediately
+            sortCars();
         } else {
             console.warn("API lỗi, dùng dữ liệu mẫu");
             allCars = generateSampleCars();
             filteredCars = [...allCars];
-            displayCars();
+            // Apply any active sort option immediately
+            sortCars();
         }
     } catch (error) {
         console.error('Lỗi kết nối:', error);
@@ -144,12 +146,7 @@ function displayCars() {
     carsGrid.innerHTML = carsToShow.map(car => {
 
         // Xử lý Gallery nhỏ (Style mới: Căn giữa, bo góc)
-        let galleryHtml = '';
-        if (car.gallery && car.gallery.length > 0) {
-            galleryHtml = `<div class="d-flex gap-1 mt-auto pt-2 justify-content-center" style="height: 30px;">`;
-            // Lấy tối đa 3 ảnh
-            car.gallery.slice(0, 3).forEach(link => {
-                galleryHtml += `<img src="${link}" class="rounded-1 border" style="width: 35px; height: 100%; object-fit: cover;">`;
+        // Build gallery later (handled below), ensure paths fixed
 
         // Fix image path: add /uploads/ if missing
         let mainImg = car.imageName || 'https://via.placeholder.com/300x200?text=No+Image';
@@ -168,7 +165,7 @@ function displayCars() {
                 if (galleryImg && !galleryImg.startsWith('/') && !galleryImg.startsWith('http')) {
                     galleryImg = '/uploads/' + galleryImg;
                 }
-                galleryHtml += `<img src="${galleryImg}" class="rounded border" style="width: 45px; height: 100%; object-fit: cover;">`;
+                galleryHtml += `<img src="${galleryImg}" class="rounded border" style="width: 45px; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/45x35?text=+'">`;
 
             });
             // Nếu còn nhiều ảnh hơn
@@ -183,55 +180,39 @@ function displayCars() {
 
         return `
         <div class="col-md-6 col-lg-4">
-
-            <div class="car-card h-100" onclick="showCarDetail(${car.id})" style="cursor: pointer;">
-
-                <div class="car-header">
-                    <div>
-                        <h5 class="car-title text-truncate" style="max-width: 200px;" title="${car.make} ${car.model}">
-                            ${car.make} ${car.model}
-                        </h5>
-                        <span class="car-type text-muted small"><i class="fas fa-map-marker-alt me-1"></i> ${car.location}</span>
-
             <div class="car-card h-100 shadow-sm border-0" onclick="showCarDetail(${car.id})" style="cursor: pointer; transition: transform 0.2s;">
-                <div class="car-img-wrapper position-relative" style="height: 200px; overflow: hidden; border-radius: 12px 12px 0 0;">
-                    <img src="${mainImg}" alt="${car.make}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div class="position-absolute top-0 end-0 m-2">
-                        <span class="badge bg-warning text-dark fw-bold shadow-sm">${car.year}</span>
 
-                    </div>
-                    <i class="far fa-heart text-secondary heart-icon"></i>
-                </div>
-
-                <div class="car-img-wrapper">
-                    <img src="${car.imageName}" alt="${car.make}">
-                </div>
-
-                <div class="car-specs">
-                    <div class="spec-item" title="Nhiên liệu">
-                        <i class="fas fa-gas-pump text-secondary"></i>
-                        <span>${car.fuel}</span>
-                    </div>
-                    <div class="spec-item" title="Hộp số">
-                        <i class="fas fa-circle-notch text-secondary"></i>
-                        <span>${car.transmission}</span>
-                    </div>
-                    <div class="spec-item" title="Số chỗ">
-                        <i class="fas fa-user-friends text-secondary"></i>
-                        <span>${car.seats} chỗ</span>
-                    </div>
-                </div>
-
-                ${galleryHtml}
-
-                <div class="car-footer mt-3 pt-3 border-top">
+                <div class="car-header px-3 pt-3">
                     <div>
-                        <span class="price-text text-primary">${formatPrice(car.amount)}</span>
-                        <span class="price-sub">/ngày</span>
+                        <h5 class="car-title text-truncate" style="max-width: 100%;" title="${car.make} ${car.model}">${car.make} ${car.model}</h5>
+                        <span class="car-type text-muted small"><i class="fas fa-map-marker-alt me-1"></i> ${car.location}</span>
                     </div>
-                    <button class="btn btn-primary-custom btn-sm px-3 shadow-sm" onclick="event.stopPropagation(); rentCar(${car.id})">
-                        Thuê ngay
-                    </button>
+                </div>
+
+                <div class="car-img-wrapper position-relative" style="height: 200px; overflow: hidden; border-radius: 12px; margin: 12px;">
+                    <img src="${mainImg}" alt="${car.make} ${car.model}" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <span class="badge bg-warning text-dark fw-bold shadow-sm">${car.year || ''}</span>
+                    </div>
+                    <i class="far fa-heart text-secondary heart-icon" style="position:absolute; bottom:8px; right:8px;"></i>
+                </div>
+
+                <div class="px-3 pb-3">
+                    <div class="car-specs mb-2">
+                        <div class="spec-item" title="Nhiên liệu"><i class="fas fa-gas-pump text-secondary"></i><span>${car.fuel || ''}</span></div>
+                        <div class="spec-item" title="Hộp số"><i class="fas fa-circle-notch text-secondary"></i><span>${car.transmission || ''}</span></div>
+                        <div class="spec-item" title="Số chỗ"><i class="fas fa-user-friends text-secondary"></i><span>${car.seats ? car.seats + ' chỗ' : ''}</span></div>
+                    </div>
+
+                    ${galleryHtml}
+
+                    <div class="car-footer mt-3 pt-3 border-top d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="price-text text-primary">${formatPrice(car.amount)}</span>
+                            <span class="price-sub">/ngày</span>
+                        </div>
+                        <button class="btn btn-primary-custom btn-sm px-3 shadow-sm" onclick="event.stopPropagation(); rentCar(${car.id})">Thuê ngay</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -295,6 +276,30 @@ function applyFilters() {
     });
 
     currentPage = 1;
+    // Apply current sorting after filtering
+    sortCars();
+}
+
+// Sort handler for the "Sắp xếp" select (id="sortBy")
+function sortCars() {
+    const sel = document.getElementById('sortBy');
+    const val = sel ? sel.value : 'default';
+
+    const compareFuncs = {
+        'price-asc': (a,b) => (a.amount || 0) - (b.amount || 0),
+        'price-desc': (a,b) => (b.amount || 0) - (a.amount || 0),
+        'year-desc': (a,b) => (b.year || 0) - (a.year || 0)
+    };
+
+    if (val === 'default') {
+        // Keep the default order from the server; preserve original order
+        const idOrder = new Map(allCars.map((c, idx) => [c.id, idx]));
+        filteredCars.sort((a,b) => (idOrder.get(a.id) || 0) - (idOrder.get(b.id) || 0));
+    } else if (compareFuncs[val]) {
+        filteredCars.sort(compareFuncs[val]);
+    }
+
+    currentPage = 1;
     displayCars();
 }
 
@@ -312,7 +317,7 @@ function clearFilters() {
 
     filteredCars = [...allCars];
     currentPage = 1;
-    displayCars();
+    sortCars();
 }
 
 function formatPrice(price) {

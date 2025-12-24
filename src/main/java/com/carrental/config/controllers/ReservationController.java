@@ -133,6 +133,30 @@ public class ReservationController {
         return ResponseEntity.ok().body("Reservation cancelled successfully");
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getReservation(@PathVariable Integer id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String email = auth.getName();
+        ApplicationUser user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+
+        // Allow if owner or user has Admin role
+        boolean isOwner = reservation.getUser().getId().equals(user.getId());
+        boolean isAdmin = user.getRoles() != null && user.getRoles().contains("Admin");
+        if (!isOwner && !isAdmin) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(mapToResponse(reservation));
+    }
+
     private ReservationResponse mapToResponse(Reservation reservation) {
         Car car = reservation.getCar();
         long days = ChronoUnit.DAYS.between(
@@ -157,6 +181,7 @@ public class ReservationController {
                 .startDate(reservation.getStartDate())
                 .endDate(reservation.getEndDate())
                 .status(statusText)
+                .statusCode(reservation.getStatus() != null ? reservation.getStatus().name() : null)
                 .dailyRate(car.getAmount())
                 .totalPrice(reservation.getTotalPrice())
                 .days((int) days)

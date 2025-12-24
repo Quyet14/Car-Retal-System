@@ -125,35 +125,15 @@ async function loadReservations() {
         </div>`;
 
     try {
-
         const response = await fetch('/api/reservations', { credentials: 'include' });
-
-        // Get current user info
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        
-        const data = {
-            email: currentUser.email,
-            firstName: currentUser.firstName,
-            lastName: currentUser.lastName,
-            country: currentUser.country,
-            currentPassword: currentPassword, // Gửi mật khẩu hiện tại
-            password: newPassword
-        };
-
-        const response = await fetch(`${API_URL}/api/auth/profile`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify(data)
-        });
 
         if (response.ok) {
             const bookings = await response.json();
             renderBookings(bookings, container);
+        } else if (response.status === 401) {
+            // Nếu chưa đăng nhập
+            container.innerHTML = `<div class="alert alert-warning small">Vui lòng đăng nhập để xem đơn đặt xe.</div>`;
         } else {
-
             // Mock Data nếu API chưa sẵn sàng (để bạn xem giao diện)
             console.warn("API chưa có, dùng dữ liệu mẫu.");
             const mockData = [
@@ -161,10 +141,6 @@ async function loadReservations() {
                 { id: 2, carName: "Mazda 3 Luxury", startDate: "2023-11-15", endDate: "2023-11-16", totalPrice: 1200000, status: "COMPLETED", carImage: "https://via.placeholder.com/150", pickupLocation: "Hà Nội" }
             ];
             renderBookings(mockData, container);
-
-            const error = await response.text();
-            alert('Đổi mật khẩu thất bại: ' + error);
-
         }
     } catch (error) {
         console.error("Lỗi load đơn:", error);
@@ -185,11 +161,14 @@ function renderBookings(bookings, container) {
 
     container.innerHTML = bookings.map(item => {
         // Class cho status badge
+        // Determine status code and labels
+        const code = item.statusCode || (item.status ? item.status.toUpperCase() : '');
         let statusClass = 'status-pending';
-        let statusLabel = item.status;
-        if (item.status === 'CONFIRMED') { statusClass = 'status-confirmed'; statusLabel = 'Đã xác nhận'; }
-        else if (item.status === 'COMPLETED') { statusClass = 'status-completed'; statusLabel = 'Hoàn thành'; }
-        else if (item.status === 'CANCELLED') { statusClass = 'status-cancelled'; statusLabel = 'Đã hủy'; }
+        let statusLabel = item.status || '';
+        if (code === 'CONFIRMED') { statusClass = 'status-confirmed'; statusLabel = item.status || 'Đã xác nhận'; }
+        else if (code === 'COMPLETED') { statusClass = 'status-completed'; statusLabel = item.status || 'Hoàn thành'; }
+        else if (code === 'CANCELLED') { statusClass = 'status-cancelled'; statusLabel = item.status || 'Đã hủy'; }
+        else { statusLabel = item.status || 'Đang xử lý'; }
 
         // Format
         const dateStart = new Date(item.startDate).toLocaleDateString('vi-VN');
@@ -220,8 +199,8 @@ function renderBookings(bookings, container) {
                 <div class="col-md-3 text-md-end border-start-md ps-md-4">
                     <div class="text-muted small mb-1">Tổng cộng</div>
                     <div class="fs-5 fw-bold text-primary mb-3">${price}</div>
-                    <button class="btn btn-outline-secondary btn-sm w-100 mb-2" onclick="alert('Xem chi tiết đơn #${item.id}')">Chi tiết</button>
-                    ${item.status === 'PENDING' || item.status === 'CONFIRMED' ?
+                    <button class="btn btn-outline-secondary btn-sm w-100 mb-2" onclick="window.location.href='/profile/reservation-detail.html?id=${item.id}'">Chi tiết</button>
+                    ${code === 'PENDING' || code === 'CONFIRMED' ?
                         `<button class="btn btn-outline-danger btn-sm w-100" onclick="cancelBooking(${item.id})">Hủy đơn</button>` : ''}
                 </div>
             </div>

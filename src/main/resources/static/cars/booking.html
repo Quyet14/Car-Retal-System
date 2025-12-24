@@ -370,6 +370,15 @@
         };
 
         try {
+            // Kiểm tra xem session/auth trên server còn hợp lệ không
+            const profileCheck = await fetch('/api/auth/profile', { credentials: 'include' });
+            if (!profileCheck.ok) {
+                messageEl.className = 'alert alert-warning mt-3 small';
+                messageEl.textContent = 'Vui lòng đăng nhập để đặt xe.';
+                setTimeout(() => window.location.href = '/auth/login.html', 1200);
+                return;
+            }
+
             const response = await fetch('/api/reservations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -385,6 +394,10 @@
                 const text = await response.text();
                 messageEl.className = 'alert alert-danger mt-3 small';
                 messageEl.textContent = 'Lỗi: ' + text;
+                if (response.status === 401) {
+                    // Nếu server vẫn trả 401, hướng người dùng quay lại đăng nhập
+                    setTimeout(() => window.location.href = '/auth/login.html', 1400);
+                }
             }
         } catch (error) {
             messageEl.className = 'alert alert-danger mt-3 small';
