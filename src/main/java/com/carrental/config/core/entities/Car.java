@@ -1,5 +1,6 @@
 package com.carrental.config.core.entities;
 
+import com.carrental.config.enums.CarStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +11,6 @@ import lombok.experimental.SuperBuilder;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Đại diện cho xe cho thuê.
- */
 @Getter
 @Setter
 @SuperBuilder
@@ -37,6 +35,17 @@ public class Car {
     @Column(name = "Year", nullable = false)
     private Integer year;
 
+    // --- BỔ SUNG CÁC TRƯỜNG CÒN THIẾU ---
+    @Column(name = "Seats", nullable = false)
+    private Integer seats = 4; // Mặc định 4 chỗ
+
+    @Column(name = "Transmission", nullable = false)
+    private String transmission = "Tự động";
+
+    @Column(name = "Fuel", nullable = false)
+    private String fuel = "Xăng";
+    // ------------------------------------
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "LocationId", nullable = false, columnDefinition = "NVARCHAR(450)")
     private Location location;
@@ -45,13 +54,20 @@ public class Car {
     private String imageName = "";
 
     @Column(name = "Amount", nullable = false)
-    private Double amount; 
+    private Double amount;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Reservation> reservations = new HashSet<>();
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
-    //@com.fasterxml.jackson.annotation.JsonIgnore
     private Set<CarImage> images = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private CarStatus status = CarStatus.AVAILABLE;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private ApplicationUser owner;
 }

@@ -1,6 +1,7 @@
 package com.carrental.config.core.repositories;
 
 import com.carrental.config.core.entities.Car;
+import com.carrental.config.enums.CarStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,6 @@ public interface CarRepository extends JpaRepository<Car, Integer>, JpaSpecifica
     Long countReservedCarsOnDate(Integer carId, LocalDateTime date);
 
     List<Car> findAllByLocation_NameContainingIgnoreCase(String locationName);
+
+    List<Car> findByStatus(CarStatus status);
 }

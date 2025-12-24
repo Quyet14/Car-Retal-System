@@ -3,104 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Xe - Car Rental System</title>
+    <title>Danh Sách Xe - Car Rental</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary-color: #f5a623;
-            --dark-color: #333;
+            --primary-color: #3563E9;
+            --secondary-color: #54A6FF;
+            --dark-text: #1A202C;
+            --light-text: #90A3BF;
+            --bg-color: #F6F7F9;
+            --card-bg: #FFFFFF;
         }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #fdfdfd; color: var(--dark-color); }
 
-        /* Navbar & Buttons (Giống Index) */
-        .navbar { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 15px 0; }
-        .navbar-brand { font-weight: 800; font-size: 26px; color: var(--primary-color) !important; }
-        .nav-link { font-weight: 600; color: #333 !important; margin: 0 10px; }
-        .nav-link.active, .nav-link:hover { color: var(--primary-color) !important; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+        }
 
+        /* --- Navbar (Đồng bộ Index) --- */
+        .navbar { background: #fff; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .navbar-brand { font-weight: 800; font-size: 28px; color: var(--primary-color) !important; text-transform: uppercase; }
+        .nav-link { font-weight: 600; color: var(--light-text) !important; margin: 0 15px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--primary-color) !important; }
+
+        /* --- Buttons --- */
         .btn-primary-custom {
-            background-color: var(--primary-color); color: #fff; border: none; padding: 10px 20px;
-            font-weight: 600; border-radius: 5px; transition: 0.3s;
+            background-color: var(--primary-color); color: #fff; border: none; padding: 10px 24px;
+            font-weight: 600; border-radius: 8px; transition: all 0.3s ease;
         }
-        .btn-primary-custom:hover { background-color: #e09612; color: #fff; transform: translateY(-2px); }
+        .btn-primary-custom:hover {
+            background-color: #2952cc; color: #fff; transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3);
+        }
 
-        /* Page Header */
+        /* --- Page Header --- */
         .page-header {
-            background: #f8f9fa;
-            padding: 40px 0;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 40px;
+            background: #fff; padding: 40px 0; margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
+        .search-box {
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .search-box input { border: none; padding: 15px 20px; font-size: 1rem; }
+        .search-box input:focus { box-shadow: none; }
+        .search-box button { border-radius: 0 12px 12px 0; }
 
-        /* Sidebar Filters */
+        /* --- Sidebar Filters --- */
         .filter-sidebar {
-            background: #fff;
-            padding: 25px;
-            border-radius: 10px;
-            border: 1px solid #eee;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            background: #fff; padding: 25px; border-radius: 16px; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
-        .filter-title { font-weight: 700; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-color); display: inline-block;}
-        .form-label { font-weight: 600; font-size: 0.9rem; color: #555; }
-        .form-select, .form-control { border-radius: 5px; padding: 10px; border: 1px solid #ddd; }
-        .form-select:focus, .form-control:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.2rem rgba(245, 166, 35, 0.25); }
+        .filter-title {
+            font-weight: 700; color: var(--dark-text); margin-bottom: 20px;
+            font-size: 1.1rem; letter-spacing: -0.5px;
+        }
+        .form-label { font-weight: 600; font-size: 0.85rem; color: var(--light-text); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-select, .form-control {
+            border-radius: 8px; padding: 10px 15px; border: 1px solid #eee;
+            background-color: #fcfcfc; color: var(--dark-text); font-weight: 600;
+        }
+        .form-select:focus, .form-control:focus {
+            border-color: var(--primary-color); background-color: #fff; box-shadow: none;
+        }
 
-        /* Car Card (Đồng bộ với Index) */
+        /* --- Car Card (Style Mới) --- */
+        /* Note: CSS này dùng cho code JS render */
         .car-card {
-            border: none; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); background: #fff;
-            transition: 0.3s; height: 100%; cursor: pointer;
+            background: #fff; border-radius: 16px; padding: 24px; border: none;
+            transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .car-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-        .car-img-wrapper { height: 200px; overflow: hidden; position: relative;}
-        .car-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .car-card:hover { box-shadow: 0 15px 30px rgba(0,0,0,0.08); transform: translateY(-5px); }
+
+        .car-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .car-title { font-size: 20px; font-weight: 700; color: var(--dark-text); margin: 0; }
+        .car-type { font-size: 14px; color: var(--light-text); font-weight: 500; }
+
+        .car-img-wrapper {
+            height: 140px; display: flex; align-items: center; justify-content: center; margin: 10px 0 20px 0;
+            position: relative; overflow: hidden; border-radius: 12px;
+        }
+        .car-img-wrapper img {
+            max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.5s;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); /* Bóng đổ xe */
+        }
         .car-card:hover .car-img-wrapper img { transform: scale(1.05); }
-        .car-price { color: var(--primary-color); font-weight: 700; font-size: 1.1rem; }
 
-        /* Pagination */
+        .car-specs { display: flex; justify-content: space-between; margin-bottom: 20px; color: var(--light-text); font-size: 14px; font-weight: 500; }
+        .spec-item { display: flex; align-items: center; gap: 6px; }
+
+        .car-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price-text { font-size: 20px; font-weight: 700; color: var(--dark-text); }
+        .price-sub { font-size: 14px; color: var(--light-text); font-weight: 500; }
+
+        /* --- Pagination --- */
         .page-btn {
-            width: 40px; height: 40px; border: 1px solid #ddd; background: #fff;
-            border-radius: 5px; margin: 0 5px; font-weight: 600; color: #555;
+            width: 40px; height: 40px; border: none; background: #fff; border-radius: 8px;
+            margin: 0 5px; font-weight: 700; color: var(--light-text); transition: 0.3s;
         }
-        .page-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
-        .page-btn:hover:not(.active) { background: #f0f0f0; }
+        .page-btn.active { background: var(--primary-color); color: #fff; box-shadow: 0 5px 15px rgba(53, 99, 233, 0.3); }
+        .page-btn:hover:not(.active) { background: #e0e9f4; color: var(--primary-color); }
 
-        /* User Dropdown */
-        .user-menu-btn { background: none; border: 2px solid #eee; padding: 8px 15px; border-radius: 30px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        /* User Menu */
+        .user-menu-btn {
+            border: 1px solid #eee; padding: 8px 16px; border-radius: 30px; background: white;
+            font-weight: 600; color: var(--dark-text); display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Footer */
+        footer { background: #fff; padding: 60px 0 30px 0; margin-top: 60px; border-top: 1px solid rgba(0,0,0,0.05); }
+        .footer-title { font-weight: 700; color: var(--dark-text); margin-bottom: 20px; }
+        footer a { text-decoration: none; color: var(--light-text); transition: 0.2s; font-weight: 500; }
+        footer a:hover { color: var(--primary-color); }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="/index.html"><i class="fas fa-car-side me-2"></i>CAR RENTAL</a>
+        <a class="navbar-brand" href="/index.html">CarRental</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav ms-auto me-4">
                 <li class="nav-item"><a class="nav-link" href="/index.html">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/cars/cars.html">Danh sách xe</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/cars/cars.html">Thuê xe</a></li>
                 <li class="nav-item"><a class="nav-link" href="/index.html#features">Dịch vụ</a></li>
                 <li class="nav-item"><a class="nav-link" href="/index.html#contact">Liên hệ</a></li>
             </ul>
 
-            <div class="d-flex gap-2" id="navAuth">
-                <a href="/auth/login.html" class="btn btn-outline-dark">Đăng nhập</a>
-                <a href="/auth/register.html" class="btn btn-primary-custom">Đăng ký</a>
+            <div class="d-flex gap-3 align-items-center" id="navAuth">
+                <a href="/auth/register.html" class="fw-bold text-decoration-none text-dark">Đăng ký</a>
+                <a href="/auth/login.html" class="btn btn-primary-custom">Đăng nhập</a>
             </div>
 
             <div class="dropdown" id="navUser" style="display: none;">
                 <button class="user-menu-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-user-circle fa-lg"></i> <span id="userName">User</span>
+                    <img src="https://ui-avatars.com/api/?name=User&background=3563E9&color=fff" class="rounded-circle" width="30" alt="Avatar">
+                    <span id="userName">User</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                    <li><a class="dropdown-item" href="/admin/dashboard.html" id="adminLink" style="display: none;">Admin Panel</a></li>
-                    <li><a class="dropdown-item" href="/profile/profile.html">Tài khoản</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2">
+                    <li><a class="dropdown-item rounded" href="/admin/dashboard.html" id="adminLink" style="display: none;"><i class="fas fa-tachometer-alt me-2 text-primary"></i>Admin Panel</a></li>
+                    <li><a class="dropdown-item rounded" href="/profile/profile.html"><i class="fas fa-user me-2 text-primary"></i>Hồ sơ</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><button class="dropdown-item text-danger" onclick="logout()">Đăng xuất</button></li>
+                    <li><button class="dropdown-item rounded text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button></li>
                 </ul>
             </div>
         </div>
@@ -109,14 +163,15 @@
 
 <section class="page-header">
     <div class="container">
-        <h2 class="fw-bold">Tìm Xe Phù Hợp Với Bạn</h2>
-        <p class="text-muted mb-0">Hơn 100+ mẫu xe đời mới đang chờ bạn trải nghiệm</p>
-
-        <div class="row mt-4 justify-content-center">
-            <div class="col-md-8">
-                <div class="input-group input-group-lg">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm tên xe, ví dụ: Mazda 3...">
-                    <button class="btn btn-primary-custom" onclick="searchCars()"><i class="fas fa-search me-2"></i>Tìm kiếm</button>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-2">Tìm Xe Phù Hợp</h2>
+                <p class="text-muted">Lựa chọn từ hơn 500+ mẫu xe chất lượng cao</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="search-box d-flex">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên xe bạn muốn tìm (VD: Mazda 3)...">
+                    <button class="btn btn-primary-custom px-4" onclick="searchCars()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </div>
@@ -127,9 +182,12 @@
     <div class="row">
         <div class="col-lg-3 mb-4">
             <div class="filter-sidebar sticky-top" style="top: 100px; z-index: 1;">
-                <h5 class="filter-title">Bộ Lọc</h5>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="filter-title mb-0">Bộ Lọc</h5>
+                    <button class="btn btn-link text-decoration-none p-0 text-secondary" style="font-size: 0.9rem;" onclick="clearFilters()">Xóa lọc</button>
+                </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label">Địa điểm</label>
                     <select id="locationFilter" class="form-select">
                         <option value="">Tất cả địa điểm</option>
@@ -140,7 +198,7 @@
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label">Hãng xe</label>
                     <select id="brandFilter" class="form-select">
                         <option value="">Tất cả hãng</option>
@@ -149,10 +207,12 @@
                         <option value="Mazda">Mazda</option>
                         <option value="Ford">Ford</option>
                         <option value="Mercedes">Mercedes</option>
+                        <option value="BMW">BMW</option>
+                        <option value="VinFast">VinFast</option>
                     </select>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label">Năm sản xuất</label>
                     <select id="yearFilter" class="form-select">
                         <option value="">Tất cả</option>
@@ -160,35 +220,38 @@
                         <option value="2023">2023</option>
                         <option value="2022">2022</option>
                         <option value="2021">2021</option>
+                        <option value="2020">2020</option>
                     </select>
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label">Giá tối đa</label>
-                    <input type="number" id="priceFilter" class="form-control" placeholder="VNĐ/ngày">
+                    <label class="form-label">Giá tối đa: <span id="priceValue" class="text-primary fw-bold"></span></label>
+                    <input type="range" id="priceFilter" class="form-range" min="0" max="5000000" step="100000" oninput="document.getElementById('priceValue').innerText = new Intl.NumberFormat('vi-VN').format(this.value) + 'đ'">
                 </div>
 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary-custom btn-sm" onclick="applyFilters()">Áp dụng</button>
-                    <button class="btn btn-outline-secondary btn-sm" onclick="clearFilters()">Xóa lọc</button>
+                <div class="d-grid">
+                    <button class="btn btn-primary-custom" onclick="applyFilters()">Áp dụng bộ lọc</button>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-9">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <span class="text-muted fw-bold">Kết quả: <span id="resultCount">0</span> xe</span>
-                <select id="sortBy" class="form-select w-auto" onchange="sortCars()">
-                    <option value="default">Sắp xếp: Mặc định</option>
-                    <option value="price-asc">Giá: Thấp đến Cao</option>
-                    <option value="price-desc">Giá: Cao đến Thấp</option>
-                    <option value="year-desc">Đời xe: Mới nhất</option>
-                </select>
+                <span class="text-secondary fw-bold">Hiển thị <span id="resultCount" class="text-dark">0</span> xe</span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-secondary small fw-bold">Sắp xếp:</span>
+                    <select id="sortBy" class="form-select form-select-sm w-auto border-0 bg-light" onchange="sortCars()">
+                        <option value="default">Mặc định</option>
+                        <option value="price-asc">Giá thấp đến cao</option>
+                        <option value="price-desc">Giá cao đến thấp</option>
+                        <option value="year-desc">Đời xe mới nhất</option>
+                    </select>
+                </div>
             </div>
 
             <div id="carsGrid" class="row g-4">
                 <div class="col-12 text-center py-5">
-                    <div class="spinner-border text-warning" role="status"></div>
+                    <div class="spinner-border text-primary" role="status"></div>
                     <p class="mt-2 text-muted">Đang tải danh sách xe...</p>
                 </div>
             </div>
@@ -198,23 +261,45 @@
     </div>
 </section>
 
-<footer style="background: #1a1a1a; color: #aaa; padding: 60px 0 20px 0;">
+<footer>
     <div class="container">
-        <div class="row">
-            <div class="col-lg-4 mb-4">
-                <h5 class="text-white mb-3">CAR RENTAL</h5>
-                <p class="small">Dịch vụ cho thuê xe tự lái hàng đầu Việt Nam.</p>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <div class="navbar-brand mb-3" style="font-size: 24px;">CarRental</div>
+                <p class="text-secondary small" style="line-height: 1.6;">
+                    Nền tảng thuê xe tự lái hàng đầu với hơn 5 năm kinh nghiệm. Chúng tôi cam kết mang đến sự hài lòng tuyệt đối cho mọi hành trình của bạn.
+                </p>
             </div>
-            <div class="col-lg-4 mb-4">
-                <h5 class="text-white mb-3">LIÊN HỆ</h5>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> 364 Cộng Hòa, TP.HCM</li>
-                    <li class="mb-2"><i class="fas fa-phone me-2"></i> 1900 xxxx</li>
+            <div class="col-lg-2 col-6">
+                <h6 class="footer-title">Về chúng tôi</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2">
+                    <li><a href="#">Giới thiệu</a></li>
+                    <li><a href="#">Cách hoạt động</a></li>
+                    <li><a href="#">Đối tác</a></li>
                 </ul>
             </div>
+            <div class="col-lg-2 col-6">
+                <h6 class="footer-title">Cộng đồng</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2">
+                    <li><a href="#">Sự kiện</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Podcast</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h6 class="footer-title">Đăng ký nhận tin</h6>
+                <div class="d-flex gap-2">
+                    <input type="email" class="form-control" placeholder="Email của bạn">
+                    <button class="btn btn-primary-custom">Gửi</button>
+                </div>
+            </div>
         </div>
-        <div class="border-top border-secondary pt-3 mt-3 text-center small">
-            <p>&copy; 2025 Car Rental System.</p>
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-5 pt-4 border-top">
+            <p class="mb-0 fw-bold small text-secondary">©2025 CarRental. All rights reserved</p>
+            <div class="d-flex gap-4 small">
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản sử dụng</a>
+            </div>
         </div>
     </div>
 </footer>

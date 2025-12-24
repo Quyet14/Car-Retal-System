@@ -3,111 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông tin cá nhân - Car Rental System</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Tài khoản - Car Rental</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #3563E9;
+            --secondary-color: #54A6FF;
+            --dark-text: #1A202C;
+            --light-text: #90A3BF;
+            --bg-color: #F6F7F9;
+            --card-radius: 16px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+        }
+
+        /* --- Navbar --- */
+        .navbar { background: #fff; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .navbar-brand { font-weight: 800; font-size: 28px; color: var(--primary-color) !important; text-transform: uppercase; }
+        .nav-link { font-weight: 600; color: var(--light-text) !important; margin: 0 15px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { color: var(--primary-color) !important; }
+
+        /* --- Sidebar --- */
+        .profile-card {
+            background: #fff; border-radius: var(--card-radius); padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03); text-align: center; margin-bottom: 20px;
+        }
+        .avatar-circle {
+            width: 100px; height: 100px; background: #E0E9F4; color: var(--primary-color);
+            font-size: 36px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; margin: 0 auto 15px; border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(53, 99, 233, 0.2);
+        }
+
+        /* Menu Nav */
+        .nav-pills .nav-link {
+            color: var(--light-text);
+            font-weight: 600;
+            padding: 14px 20px;
+            border-radius: 12px;
+            text-align: left;
+            margin-bottom: 8px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-pills .nav-link i {
+            width: 20px;
+            text-align: center;
+            color: var(--light-text); /* Màu icon mặc định */
+            transition: 0.2s;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #F0F5FF;
+            color: var(--primary-color);
+        }
+
+        .nav-pills .nav-link:hover i {
+            color: var(--primary-color);
+        }
+
+        /* --- SỬA ĐOẠN NÀY ĐỂ CHỮ TRẮNG --- */
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color) !important; /* Thêm !important để chắc chắn đè */
+            color: #ffffff !important; /* Chữ màu trắng */
+            box-shadow: 0 5px 15px rgba(53, 99, 233, 0.3);
+        }
+
+        /* Đảm bảo icon bên trong cũng chuyển sang trắng */
+        .nav-pills .nav-link.active i {
+            color: #ffffff !important;
+        }
+
+        /* --- Content Area --- */
+        .content-card {
+            background: #fff; border-radius: var(--card-radius); padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03); min-height: 500px;
+        }
+        .card-header-custom {
+            margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #eee;
+        }
+        .card-title { font-weight: 800; color: var(--dark-text); font-size: 1.5rem; margin: 0; }
+
+        /* Form Inputs */
+        .form-label { font-weight: 700; font-size: 14px; color: var(--dark-text); margin-bottom: 8px; }
+        .form-control, .form-select {
+            padding: 12px 15px; border-radius: 10px; border: 1px solid #eee;
+            background-color: #fcfcfc; color: var(--dark-text); font-weight: 600; font-size: 15px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color); background-color: #fff; box-shadow: 0 0 0 4px rgba(53, 99, 233, 0.1);
+        }
+        .form-control[readonly] { background-color: #f0f2f5; color: #6c757d; }
+
+        .btn-primary-custom {
+            background-color: var(--primary-color); color: #fff; border: none; padding: 12px 30px;
+            font-weight: 700; border-radius: 10px; transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            background-color: #2952cc; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(53, 99, 233, 0.3);
+        }
+
+        /* Reservation Item */
+        .reservation-card {
+            border: 1px solid #eee; border-radius: 16px; padding: 20px; margin-bottom: 20px;
+            background: #fff; transition: 0.2s;
+        }
+        .reservation-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: var(--secondary-color); }
+
+        .res-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .res-car-img { width: 120px; height: 80px; object-fit: cover; border-radius: 10px; background: #eee; }
+        .res-info h5 { font-weight: 700; margin-bottom: 5px; }
+
+        .status-badge {
+            font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 20px; text-transform: uppercase;
+        }
+        .status-pending { background: #FFF8E1; color: #F5A623; }
+        .status-confirmed { background: #E0F2FE; color: #007bff; }
+        .status-completed { background: #DCFCE7; color: #16a34a; }
+        .status-cancelled { background: #FEE2E2; color: #dc3545; }
+
+        .detail-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #666; }
+        .detail-row span:last-child { font-weight: 600; color: #333; }
+
+        /* Footer */
+        footer { background: #fff; padding: 40px 0; margin-top: 60px; border-top: 1px solid rgba(0,0,0,0.05); text-align: center; }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <h1><a href="/index.html" style="color: inherit; text-decoration: none;">🚗 Car Rental</a></h1>
-            </div>
-            <div class="nav-menu">
-                <a href="/index.html" class="nav-link">Trang chủ</a>
-                <a href="/cars/cars.html" class="nav-link">Xe cho thuê</a>
-                <a href="/profile/profile.html" class="nav-link active">Tài khoản</a>
-            </div>
-            <div class="nav-user">
-                <span class="user-name" id="userName"></span>
-                <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Profile Section -->
-    <section class="section">
-        <div class="container">
-            <div class="profile-container">
-                <div class="profile-sidebar">
-                    <div class="profile-avatar">
-                        <div class="avatar-circle">
-                            <span id="avatarInitials">U</span>
-                        </div>
-                        <h3 id="profileName">User Name</h3>
-                        <p id="profileEmail">user@email.com</p>
-                    </div>
-                    <nav class="profile-nav">
-                        <a href="#info" class="profile-nav-link active">Thông tin cá nhân</a>
-                        <a href="#reservations" class="profile-nav-link">Đơn thuê xe</a>
-                        <a href="#security" class="profile-nav-link">Bảo mật</a>
-                    </nav>
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="/index.html">CarRental</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto me-4">
+                <li class="nav-item"><a class="nav-link" href="/index.html">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cars/cars.html">Thuê xe</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/profile/profile.html">Tài khoản</a></li>
+            </ul>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold" onclick="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+            </button>
+        </div>
+    </div>
+</nav>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <div class="profile-card">
+                    <div class="avatar-circle" id="avatarInitials">U</div>
+                    <h5 class="fw-bold mb-1" id="profileName">Loading...</h5>
+                    <p class="text-muted small mb-0" id="profileEmail">...</p>
                 </div>
 
-                <div class="profile-content">
-                    <!-- Personal Info -->
-                    <div id="info" class="profile-section active">
-                        <h2>Thông tin cá nhân</h2>
-                        <form id="profileForm" class="profile-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Họ</label>
-                                    <input type="text" name="firstName" id="firstName" class="form-input">
-                                </div>
-                                <div class="form-group">
-                                    <label>Tên</label>
-                                    <input type="text" name="lastName" id="lastName" class="form-input">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="email" id="email" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label>Quốc gia</label>
-                                <select name="country" id="country" class="form-input">
-                                    <option value="Vietnam">Việt Nam</option>
-                                    <option value="United States">United States</option>
-                                    <option value="Japan">Japan</option>
-                                </select>
-                            </div>
-                            <div id="updateMessage" class="success-message"></div>
-                            <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
-                        </form>
-                    </div>
-
-                    <!-- Reservations -->
-                    <div id="reservations" class="profile-section">
-                        <h2>Đơn thuê xe của tôi</h2>
-                        <div id="reservationsList" class="reservations-list">
-                            <p class="empty-state">Bạn chưa có đơn thuê xe nào</p>
-                        </div>
-                    </div>
-
-                    <!-- Security -->
-                    <div id="security" class="profile-section">
-                        <h2>Bảo mật</h2>
-                        <form id="passwordForm" class="profile-form">
-                            <div class="form-group">
-                                <label>Mật khẩu hiện tại</label>
-                                <input type="password" name="currentPassword" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label>Mật khẩu mới</label>
-                                <input type="password" name="newPassword" class="form-input" minlength="8">
-                            </div>
-                            <div class="form-group">
-                                <label>Xác nhận mật khẩu mới</label>
-                                <input type="password" name="confirmPassword" class="form-input">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
-                        </form>
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active" id="v-pills-info-tab" data-bs-toggle="pill" data-bs-target="#info" type="button">
+                            <i class="far fa-user"></i> Thông tin cá nhân
+                        </button>
+                        <button class="nav-link" id="v-pills-reservations-tab" data-bs-toggle="pill" data-bs-target="#reservations" type="button">
+                            <i class="fas fa-history"></i> Lịch sử thuê xe
+                        </button>
+                        <button class="nav-link" id="v-pills-security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button">
+                            <i class="fas fa-shield-alt"></i> Bảo mật & Mật khẩu
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <script src="/js/profile.js"></script>
+            <div class="col-lg-9">
+                <div class="tab-content h-100" id="v-pills-tabContent">
+
+                    <div class="tab-pane fade show active h-100" id="info" role="tabpanel">
+                        <div class="content-card">
+                            <div class="card-header-custom">
+                                <h2 class="card-title">Chỉnh sửa hồ sơ</h2>
+                                <p class="text-muted mb-0 small">Quản lý thông tin cá nhân của bạn</p>
+                            </div>
+
+                            <form id="profileForm">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Họ (Last Name)</label>
+                                        <input type="text" id="firstName" name="firstName" class="form-control" placeholder="Nguyễn">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tên (First Name)</label>
+                                        <input type="text" id="lastName" name="lastName" class="form-control" placeholder="Văn A">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ Email</label>
+                                    <input type="email" id="email" name="email" class="form-control" readonly>
+                                    <small class="text-muted">Email không thể thay đổi.</small>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Quốc gia</label>
+                                    <select id="country" name="country" class="form-select">
+                                        <option value="Vietnam">Việt Nam</option>
+                                        <option value="United States">Hoa Kỳ</option>
+                                        <option value="Japan">Nhật Bản</option>
+                                        <option value="Korea">Hàn Quốc</option>
+                                    </select>
+                                </div>
+
+                                <div id="updateMessage" class="alert d-none small"></div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary-custom">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade h-100" id="reservations" role="tabpanel">
+                        <div class="content-card">
+                            <div class="card-header-custom">
+                                <h2 class="card-title">Đơn thuê xe của tôi</h2>
+                                <p class="text-muted mb-0 small">Danh sách các chuyến đi bạn đã đặt</p>
+                            </div>
+
+                            <div id="reservationsList">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted">Đang tải dữ liệu...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade h-100" id="security" role="tabpanel">
+                        <div class="content-card">
+                            <div class="card-header-custom">
+                                <h2 class="card-title">Đổi mật khẩu</h2>
+                                <p class="text-muted mb-0 small">Để bảo mật, hãy sử dụng mật khẩu mạnh</p>
+                            </div>
+
+                            <form id="passwordForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu hiện tại</label>
+                                    <input type="password" name="currentPassword" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu mới</label>
+                                    <input type="password" name="newPassword" class="form-control" minlength="8" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Xác nhận mật khẩu mới</label>
+                                    <input type="password" name="confirmPassword" class="form-control" required>
+                                </div>
+
+                                <div id="passwordMessage" class="alert d-none small"></div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary-custom">Cập nhật mật khẩu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p class="mb-0 fw-bold small text-secondary">©2025 CarRental. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/profile.js"></script>
 </body>
 </html>

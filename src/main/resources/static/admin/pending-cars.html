@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Duyệt xe ký gửi - Admin</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<nav class="admin-navbar">
+  <div class="container">
+    <div class="nav-brand"><h1>🚗 Admin Panel</h1></div>
+    <div class="nav-menu">
+      <a href="/admin/dashboard.html" class="nav-link">Dashboard</a>
+      <a href="/admin/cars.html" class="nav-link">Quản lý xe</a>
+      <a href="/admin/pending-cars.html" class="nav-link active">Duyệt xe ký gửi</a> <a href="/admin/reservations.html" class="nav-link">Đơn thuê xe</a>
+    </div>
+    <div class="nav-user">
+      <span class="user-name" id="adminName">Admin</span>
+      <button class="btn btn-outline" onclick="logout()">Đăng xuất</button>
+    </div>
+  </div>
+</nav>
+
+<section class="admin-section">
+  <div class="container">
+    <div class="admin-header">
+      <h1>Danh sách chờ duyệt</h1>
+    </div>
+
+    <div class="admin-card">
+      <div id="pendingCarsTable" class="table-container">
+        <div class="loading">Đang tải...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeDetailModal()">&times;</span>
+    <h2>Chi tiết xe</h2>
+    <div id="carDetailContent"></div>
+    <div class="modal-actions mt-3 text-end">
+      <button class="btn btn-danger" onclick="rejectCurrentCar()">Từ chối</button>
+      <button class="btn btn-success" onclick="approveCurrentCar()">Duyệt ngay</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/admin-pending.js"></script> </body>
+</html>

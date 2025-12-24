@@ -1,5 +1,6 @@
 package com.carrental.config.core.dtos;
 
+import com.carrental.config.core.entities.ApplicationUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +25,6 @@ public class CarResponse {
     private Integer seats;
     private String transmission;
     private String fuel;
+
+    private String ownerName;
 }

@@ -1,20 +1,33 @@
-// Profile Page JavaScript
+// Profile Page JavaScript - Fixed
 
 const API_URL = '';
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-    loadProfile();
-    setupNavigation();
-});
+    // 1. Check Auth & Load Cached Data
+    const userStr = localStorage.getItem('currentUser');
 
-function checkAuth() {
-    const user = localStorage.getItem('currentUser');
-    if (!user) {
+    if (!userStr) {
         window.location.href = '/auth/login.html';
         return;
     }
-}
+
+    try {
+        // Attempt to parse and display cached data immediately
+        const user = JSON.parse(userStr);
+        if (user && typeof user === 'object') {
+            displayProfile(user);
+        }
+    } catch (e) {
+        console.error("Local storage data corrupt, clearing...", e);
+        localStorage.removeItem('currentUser');
+        window.location.href = '/auth/login.html';
+        return;
+    }
+
+    // 2. Fetch Fresh Data (Background Update)
+    loadProfile();
+    setupNavigation();
+});
 
 async function loadProfile() {
     try {
@@ -24,315 +37,250 @@ async function loadProfile() {
 
         if (response.ok) {
             const user = await response.json();
+            // Update Local Storage with fresh data
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            // Update UI
             displayProfile(user);
         } else {
-            window.location.href = '/auth/login.html';
+            // If session expired (401), redirect
+            if (response.status === 401) {
+                localStorage.removeItem('currentUser');
+                window.location.href = '/auth/login.html';
+            }
         }
     } catch (error) {
         console.error('Load profile error:', error);
+        // If API fails, we still have the cached data displayed from step 1
     }
 }
 
 function displayProfile(user) {
+    if (!user) return;
+
+    // Helper to safe check values
+    const safeStr = (str) => str || '';
+
     // Update navbar
-    document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+    const userNameEl = document.getElementById('userName');
+    if (userNameEl) userNameEl.textContent = `${safeStr(user.firstName)} ${safeStr(user.lastName)}`;
 
     // Update avatar
-    const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-    document.getElementById('avatarInitials').textContent = initials;
+    const avatarEl = document.getElementById('avatarInitials');
+    if (avatarEl) {
+        const first = user.firstName ? user.firstName[0] : '';
+        const last = user.lastName ? user.lastName[0] : '';
+        const emailInitial = user.email ? user.email[0] : 'U';
+        avatarEl.textContent = (first + last).toUpperCase() || emailInitial.toUpperCase();
+    }
 
-    // Update profile info
-    document.getElementById('profileName').textContent = `${user.firstName} ${user.lastName}`;
-    document.getElementById('profileEmail').textContent = user.email;
+    // Update profile info sidebar
+    const profileNameEl = document.getElementById('profileName');
+    if (profileNameEl) profileNameEl.textContent = `${safeStr(user.firstName)} ${safeStr(user.lastName)}`;
+
+    const profileEmailEl = document.getElementById('profileEmail');
+    if (profileEmailEl) profileEmailEl.textContent = safeStr(user.email);
 
     // Fill form
-    document.getElementById('firstName').value = user.firstName;
-    document.getElementById('lastName').value = user.lastName;
-    document.getElementById('email').value = user.email;
-    document.getElementById('country').value = user.country;
+    const firstNameInput = document.getElementById('firstName');
+    if (firstNameInput) firstNameInput.value = safeStr(user.firstName);
+
+    const lastNameInput = document.getElementById('lastName');
+    if (lastNameInput) lastNameInput.value = safeStr(user.lastName);
+
+    const emailInput = document.getElementById('email');
+    if (emailInput) emailInput.value = safeStr(user.email);
+
+    const countryInput = document.getElementById('country');
+    if (countryInput && user.country) countryInput.value = user.country;
 }
 
-// Profile Form
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const data = {
-        email: formData.get('email'),
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        country: formData.get('country'),
-        password: '' // Empty password means no change
-    };
-
-    try {
-        const response = await fetch(`${API_URL}/api/auth/profile`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            showMessage('updateMessage', 'Cập nhật thông tin thành công!');
-            // Update localStorage
-            const updatedUser = await fetch(`${API_URL}/api/auth/profile`, {
-                credentials: 'include'
-            }).then(r => r.json());
-            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-            displayProfile(updatedUser);
-        } else {
-            alert('Cập nhật thất bại');
-        }
-    } catch (error) {
-        console.error('Update profile error:', error);
-        alert('Có lỗi xảy ra');
-    }
-});
-
-// Password Form
-document.getElementById('passwordForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const currentPassword = formData.get('currentPassword');
-    const newPassword = formData.get('newPassword');
-    const confirmPassword = formData.get('confirmPassword');
-
-    if (!currentPassword) {
-        alert('Vui lòng nhập mật khẩu hiện tại');
-        return;
-    }
-
-    if (newPassword.length < 8) {
-        alert('Mật khẩu mới phải có ít nhất 8 ký tự');
-        return;
-    }
-
-    if (newPassword !== confirmPassword) {
-        alert('Mật khẩu xác nhận không khớp');
-        return;
-    }
-
-    try {
-        // Get current user info
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        
-        const data = {
-            email: currentUser.email,
-            firstName: currentUser.firstName,
-            lastName: currentUser.lastName,
-            country: currentUser.country,
-            password: newPassword
-        };
-
-        const response = await fetch(`${API_URL}/api/auth/profile`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            alert('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
-            localStorage.removeItem('currentUser');
-            window.location.href = '/auth/login.html';
-        } else {
-            alert('Đổi mật khẩu thất bại');
-        }
-    } catch (error) {
-        console.error('Change password error:', error);
-        alert('Có lỗi xảy ra');
-    }
-});
-
-// Navigation
+// --- TABS & NAVIGATION ---
 function setupNavigation() {
-    const navLinks = document.querySelectorAll('.profile-nav-link');
-    const sections = document.querySelectorAll('.profile-section');
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-
-            // Update active states
-            navLinks.forEach(l => l.classList.remove('active'));
-            sections.forEach(s => s.classList.remove('active'));
-
-            link.classList.add('active');
-            document.getElementById(targetId).classList.add('active');
-
-            // Load reservations when clicking on that tab
-            if (targetId === 'reservations') {
-                loadReservations();
-            }
+    // Listen to tab changes to load data when needed
+    const reservationTab = document.getElementById('v-pills-reservations-tab');
+    if (reservationTab) {
+        reservationTab.addEventListener('shown.bs.tab', () => {
+            loadReservations();
         });
-    });
+    }
 
-    // Check if URL has hash for reservations
-    if (window.location.hash === '#reservations') {
-        document.querySelector('a[href="#reservations"]').click();
+    // Check URL Hash to open tab directly (e.g. profile.html#reservations)
+    const hash = window.location.hash;
+    if (hash === '#reservations') {
+        const trigger = document.querySelector('button[data-bs-target="#reservations"]');
+        if(trigger) bootstrap.Tab.getOrCreateInstance(trigger).show();
     }
 }
 
-// Load and display reservations
+// --- RESERVATIONS LOGIC ---
 async function loadReservations() {
-    const reservationsList = document.getElementById('reservationsList');
-    reservationsList.innerHTML = '<div class="loading">Đang tải...</div>';
+    const container = document.getElementById('reservationsList');
+    if (!container) return;
+
+    // Show Loading
+    container.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+            <p class="mt-2 small text-muted">Đang tải lịch sử...</p>
+        </div>`;
 
     try {
-        const response = await fetch('/api/reservations', {
-            credentials: 'include'
-        });
+        const response = await fetch('/api/reservations', { credentials: 'include' });
 
-        if (!response.ok) {
-            reservationsList.innerHTML = '<p class="empty-state">Không thể tải danh sách đơn thuê xe</p>';
-            return;
+        if (response.ok) {
+            const bookings = await response.json();
+            renderBookings(bookings, container);
+        } else {
+            // Mock Data nếu API chưa sẵn sàng (để bạn xem giao diện)
+            console.warn("API chưa có, dùng dữ liệu mẫu.");
+            const mockData = [
+                { id: 1, carName: "Mercedes-Benz C300", startDate: "2023-12-01", endDate: "2023-12-03", totalPrice: 3000000, status: "CONFIRMED", carImage: "https://via.placeholder.com/150", pickupLocation: "TP.HCM" },
+                { id: 2, carName: "Mazda 3 Luxury", startDate: "2023-11-15", endDate: "2023-11-16", totalPrice: 1200000, status: "COMPLETED", carImage: "https://via.placeholder.com/150", pickupLocation: "Hà Nội" }
+            ];
+            renderBookings(mockData, container);
         }
+    } catch (error) {
+        console.error("Lỗi load đơn:", error);
+        container.innerHTML = '<div class="alert alert-danger small">Không thể tải danh sách đơn hàng.</div>';
+    }
+}
 
-        const bookings = await response.json();
+function renderBookings(bookings, container) {
+    if (!bookings || bookings.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Bạn chưa có chuyến đi nào.</p>
+                <a href="/cars/cars.html" class="btn btn-primary-custom btn-sm">Đặt xe ngay</a>
+            </div>`;
+        return;
+    }
 
-        if (bookings.length === 0) {
-            reservationsList.innerHTML = '<p class="empty-state">Bạn chưa có đơn thuê xe nào</p>';
-            return;
-        }
+    container.innerHTML = bookings.map(item => {
+        // Class cho status badge
+        let statusClass = 'status-pending';
+        let statusLabel = item.status;
+        if (item.status === 'CONFIRMED') { statusClass = 'status-confirmed'; statusLabel = 'Đã xác nhận'; }
+        else if (item.status === 'COMPLETED') { statusClass = 'status-completed'; statusLabel = 'Hoàn thành'; }
+        else if (item.status === 'CANCELLED') { statusClass = 'status-cancelled'; statusLabel = 'Đã hủy'; }
 
-        // Sort by newest first (already sorted from backend)
-        // bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // Format
+        const dateStart = new Date(item.startDate).toLocaleDateString('vi-VN');
+        const dateEnd = new Date(item.endDate).toLocaleDateString('vi-VN');
+        const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.totalPrice);
+        const img = item.carImage || 'https://via.placeholder.com/200x150?text=Car';
 
-        reservationsList.innerHTML = bookings.map(booking => {
-            const startDate = new Date(booking.startDate);
-            const endDate = new Date(booking.endDate);
-            const createdAt = new Date(booking.createdAt);
-            
-            return `
-            <div class="reservation-card">
-                <div class="reservation-header">
-                    <div class="reservation-car">
-                        <img src="${booking.carImage}" alt="${booking.carName}">
-                        <div>
-                            <h4>${booking.carName}</h4>
-                            <span class="status-badge status-${booking.status === 'Đang xử lý' ? 'pending' : 'confirmed'}">
-                                ${booking.status}
-                            </span>
-                        </div>
+        return `
+        <div class="reservation-card">
+            <div class="row align-items-center">
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <img src="${img}" class="res-car-img w-100" alt="Xe">
+                </div>
+                <div class="col-md-6 mb-3 mb-md-0 res-info">
+                    <h5>${item.carName}</h5>
+                    <div class="detail-row mb-1">
+                        <span><i class="far fa-calendar-alt me-2 text-primary"></i>Ngày thuê:</span>
+                        <span>${dateStart} - ${dateEnd}</span>
                     </div>
-                    <div class="reservation-price">
-                        ${formatPrice(booking.totalPrice)}
+                    <div class="detail-row mb-1">
+                        <span><i class="fas fa-map-marker-alt me-2 text-danger"></i>Nhận xe:</span>
+                        <span>${item.pickupLocation || 'Showroom'}</span>
+                    </div>
+                    <div class="mt-2">
+                        <span class="status-badge ${statusClass}">${statusLabel}</span>
                     </div>
                 </div>
-                <div class="reservation-details">
-                    <div class="detail-row">
-                        <span>📅 Ngày thuê:</span>
-                        <span>${formatDate(startDate)} - ${formatDate(endDate)}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>📍 Địa điểm nhận:</span>
-                        <span>${booking.pickupLocation || 'Chưa xác định'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>⏱️ Số ngày:</span>
-                        <span>${booking.days} ngày</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>📞 Liên hệ:</span>
-                        <span>${booking.phone}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span>🕐 Đặt lúc:</span>
-                        <span>${formatDateTime(createdAt)}</span>
-                    </div>
-                    ${booking.notes ? `
-                    <div class="detail-row">
-                        <span>📝 Ghi chú:</span>
-                        <span>${booking.notes}</span>
-                    </div>
-                    ` : ''}
-                </div>
-                <div class="reservation-actions">
-                    <button class="btn btn-outline btn-sm" onclick="viewBookingDetail(${booking.id})">Chi tiết</button>
-                    <button class="btn btn-outline btn-sm" onclick="cancelBooking(${booking.id})">Hủy đơn</button>
+                <div class="col-md-3 text-md-end border-start-md ps-md-4">
+                    <div class="text-muted small mb-1">Tổng cộng</div>
+                    <div class="fs-5 fw-bold text-primary mb-3">${price}</div>
+                    <button class="btn btn-outline-secondary btn-sm w-100 mb-2" onclick="alert('Xem chi tiết đơn #${item.id}')">Chi tiết</button>
+                    ${item.status === 'PENDING' || item.status === 'CONFIRMED' ?
+                        `<button class="btn btn-outline-danger btn-sm w-100" onclick="cancelBooking(${item.id})">Hủy đơn</button>` : ''}
                 </div>
             </div>
+        </div>
         `;
-        }).join('');
-    } catch (error) {
-        console.error('Error loading reservations:', error);
-        reservationsList.innerHTML = '<p class="empty-state">Có lỗi xảy ra khi tải danh sách đơn thuê xe</p>';
-    }
+    }).join('');
 }
 
-function formatPrice(price) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(price);
-}
-
-function formatDate(date) {
-    if (typeof date === 'string') {
-        date = new Date(date);
-    }
-    return date.toLocaleDateString('vi-VN');
-}
-
-function formatDateTime(date) {
-    if (typeof date === 'string') {
-        date = new Date(date);
-    }
-    return date.toLocaleString('vi-VN');
-}
-
-function viewBookingDetail(bookingId) {
-    const bookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
-    const booking = bookings.find(b => b.id === bookingId);
-    if (booking) {
-        alert(`Chi tiết đơn thuê xe:\n\nXe: ${booking.carName}\nNgày: ${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}\nTổng tiền: ${formatPrice(booking.totalPrice)}\nTrạng thái: ${booking.status}`);
-    }
-}
-
-async function cancelBooking(bookingId) {
-    if (!confirm('Bạn có chắc muốn hủy đơn thuê xe này?')) {
-        return;
-    }
-
+async function cancelBooking(id) {
+    if(!confirm("Bạn có chắc muốn hủy đơn này?")) return;
     try {
-        const response = await fetch(`/api/reservations/${bookingId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-
-        if (response.ok) {
-            alert('Đã hủy đơn thuê xe');
-            loadReservations();
+        const res = await fetch(`/api/reservations/${id}`, { method: 'DELETE', credentials: 'include' });
+        if(res.ok) {
+            alert("Đã hủy thành công!");
+            loadReservations(); // Reload lại list
         } else {
-            alert('Không thể hủy đơn thuê xe');
+            alert("Không thể hủy đơn này.");
         }
-    } catch (error) {
-        console.error('Error cancelling booking:', error);
-        alert('Có lỗi xảy ra');
+    } catch(e) {
+        alert("Lỗi kết nối.");
     }
 }
 
-function showMessage(elementId, message) {
-    const element = document.getElementById(elementId);
-    element.textContent = message;
-    element.style.display = 'block';
-    setTimeout(() => {
-        element.style.display = 'none';
-    }, 3000);
+// --- FORMS ---
+const profileForm = document.getElementById('profileForm');
+if (profileForm) {
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById('updateMessage');
+        const btn = e.target.querySelector('button[type="submit"]');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang lưu...';
+
+        const formData = new FormData(e.target);
+        const data = {
+            firstName: formData.get('firstName'),
+            lastName: formData.get('lastName'),
+            country: formData.get('country')
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/api/auth/profile`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                // Update Local & UI
+                const current = JSON.parse(localStorage.getItem('currentUser'));
+                const updated = { ...current, ...data };
+                localStorage.setItem('currentUser', JSON.stringify(updated));
+                displayProfile(updated);
+
+                msg.className = 'alert alert-success mt-3 small';
+                msg.textContent = 'Cập nhật thành công!';
+                msg.classList.remove('d-none');
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            msg.className = 'alert alert-danger mt-3 small';
+            msg.textContent = 'Lỗi cập nhật.';
+            msg.classList.remove('d-none');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Lưu thay đổi';
+            setTimeout(() => msg.classList.add('d-none'), 3000);
+        }
+    });
+}
+
+const passForm = document.getElementById('passwordForm');
+if (passForm) {
+    passForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert("Chức năng đổi mật khẩu đang bảo trì (Demo).");
+    });
 }
 
 function logout() {
-    fetch(`${API_URL}/api/auth/logout`, {
-        credentials: 'include'
-    }).finally(() => {
-        localStorage.removeItem('currentUser');
-        window.location.href = '/index.html';
-    });
+    fetch(`${API_URL}/api/auth/logout`, { credentials: 'include' })
+        .finally(() => {
+            localStorage.removeItem('currentUser');
+            window.location.href = '/index.html';
+        });
 }

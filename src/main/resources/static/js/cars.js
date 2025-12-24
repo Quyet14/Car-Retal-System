@@ -1,4 +1,4 @@
-// Cars Page JavaScript - Fix lỗi hiển thị nút Auth & Thêm Gallery
+// Cars Page JavaScript - Updated for New UI Design
 
 const API_URL = ''; // Để trống nếu cùng domain
 let allCars = [];
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
 });
 
-// === 1. XỬ LÝ ẨN/HIỆN NÚT ĐĂNG NHẬP (QUAN TRỌNG) ===
+// === 1. XỬ LÝ ẨN/HIỆN NÚT ĐĂNG NHẬP ===
 function checkAuth() {
     const userStr = localStorage.getItem('currentUser');
 
@@ -23,7 +23,6 @@ function checkAuth() {
     const adminLink = document.getElementById('adminLink');
 
     if (userStr) {
-        // --- ĐÃ ĐĂNG NHẬP ---
         try {
             const user = JSON.parse(userStr);
 
@@ -52,7 +51,6 @@ function checkAuth() {
             localStorage.removeItem('currentUser');
         }
     } else {
-        // --- CHƯA ĐĂNG NHẬP ---
         if (navAuth) {
             navAuth.style.display = 'flex';
             navAuth.classList.add('d-flex');
@@ -78,7 +76,7 @@ async function loadCars() {
     if(carsGrid) {
         carsGrid.innerHTML = `
             <div class="col-12 text-center py-5">
-                <div class="spinner-border text-warning" role="status"></div>
+                <div class="spinner-border text-primary" role="status"></div>
                 <p class="mt-2 text-muted">Đang tải danh sách xe...</p>
             </div>`;
     }
@@ -96,12 +94,12 @@ async function loadCars() {
                 year: car.year,
                 location: car.location,
                 amount: car.amount,
-                // Ưu tiên ảnh thật -> ảnh demo -> ảnh giữ chỗ
-                imageName: car.imageName || car.image || 'https://via.placeholder.com/300x200?text=No+Image',
-                // [MỚI] Map thêm trường gallery
+                // Ưu tiên ảnh thật -> fallback ảnh đẹp hơn
+                imageName: car.imageName || car.image || 'https://freepngimg.com/thumb/car/4-2-car-png-hd.png',
                 gallery: car.gallery || [],
                 seats: car.seats || 5,
-                transmission: car.transmission || 'Tự động'
+                transmission: car.transmission || 'Tự động',
+                fuel: car.fuel || 'Xăng'
             }));
             filteredCars = [...allCars];
             displayCars();
@@ -119,6 +117,7 @@ async function loadCars() {
     }
 }
 
+// === [QUAN TRỌNG] HÀM RENDER GIAO DIỆN MỚI ===
 function displayCars() {
     const carsGrid = document.getElementById('carsGrid');
     const resultCount = document.getElementById('resultCount');
@@ -132,62 +131,78 @@ function displayCars() {
 
     if (carsToShow.length === 0) {
         carsGrid.innerHTML = `
-            <div class="col-12 text-center py-5 bg-light rounded">
+            <div class="col-12 text-center py-5 bg-white rounded shadow-sm">
                 <i class="fas fa-search fa-3x text-muted mb-3"></i>
                 <h5>Không tìm thấy xe nào</h5>
                 <p class="text-muted">Thử thay đổi bộ lọc hoặc tìm từ khóa khác</p>
-                <button class="btn btn-outline-warning mt-2" onclick="clearFilters()">Xóa bộ lọc</button>
+                <button class="btn btn-outline-primary mt-2" onclick="clearFilters()">Xóa bộ lọc</button>
             </div>`;
         displayPagination();
         return;
     }
 
     carsGrid.innerHTML = carsToShow.map(car => {
-        // [MỚI] Xử lý hiển thị Gallery nhỏ
+        // Xử lý Gallery nhỏ (Style mới: Căn giữa, bo góc)
         let galleryHtml = '';
         if (car.gallery && car.gallery.length > 0) {
-            galleryHtml = `<div class="d-flex gap-1 mt-2 overflow-hidden" style="height: 35px;">`;
-            // Lấy tối đa 4 ảnh đầu tiên để hiển thị
-            car.gallery.slice(0, 4).forEach(link => {
-                galleryHtml += `<img src="${link}" class="rounded border" style="width: 45px; height: 100%; object-fit: cover;">`;
+            galleryHtml = `<div class="d-flex gap-1 mt-auto pt-2 justify-content-center" style="height: 30px;">`;
+            // Lấy tối đa 3 ảnh
+            car.gallery.slice(0, 3).forEach(link => {
+                galleryHtml += `<img src="${link}" class="rounded-1 border" style="width: 35px; height: 100%; object-fit: cover;">`;
             });
-            // Nếu còn nhiều ảnh hơn thì hiện số lượng
-            if(car.gallery.length > 4) {
-                 galleryHtml += `<div class="d-flex align-items-center justify-content-center bg-light border rounded small text-muted" style="width: 35px; height: 100%;">+${car.gallery.length - 4}</div>`;
+            // Nếu còn nhiều ảnh hơn
+            if(car.gallery.length > 3) {
+                 galleryHtml += `<div class="d-flex align-items-center justify-content-center bg-light border rounded-1 small text-muted fw-bold" style="width: 35px; height: 100%; font-size: 10px;">+${car.gallery.length - 3}</div>`;
             }
             galleryHtml += `</div>`;
+        } else {
+            // Placeholder khoảng trắng để card đều nhau nếu không có gallery
+            galleryHtml = `<div style="height: 30px;" class="mt-auto"></div>`;
         }
 
         return `
         <div class="col-md-6 col-lg-4">
-            <div class="car-card h-100 shadow-sm border-0" onclick="showCarDetail(${car.id})" style="cursor: pointer; transition: transform 0.2s;">
-                <div class="car-img-wrapper position-relative" style="height: 200px; overflow: hidden; border-radius: 12px 12px 0 0;">
-                    <img src="${car.imageName}" alt="${car.make}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div class="position-absolute top-0 end-0 m-2">
-                        <span class="badge bg-warning text-dark fw-bold shadow-sm">${car.year}</span>
+            <div class="car-card h-100" onclick="showCarDetail(${car.id})" style="cursor: pointer;">
+
+                <div class="car-header">
+                    <div>
+                        <h5 class="car-title text-truncate" style="max-width: 200px;" title="${car.make} ${car.model}">
+                            ${car.make} ${car.model}
+                        </h5>
+                        <span class="car-type text-muted small"><i class="fas fa-map-marker-alt me-1"></i> ${car.location}</span>
+                    </div>
+                    <i class="far fa-heart text-secondary heart-icon"></i>
+                </div>
+
+                <div class="car-img-wrapper">
+                    <img src="${car.imageName}" alt="${car.make}">
+                </div>
+
+                <div class="car-specs">
+                    <div class="spec-item" title="Nhiên liệu">
+                        <i class="fas fa-gas-pump text-secondary"></i>
+                        <span>${car.fuel}</span>
+                    </div>
+                    <div class="spec-item" title="Hộp số">
+                        <i class="fas fa-circle-notch text-secondary"></i>
+                        <span>${car.transmission}</span>
+                    </div>
+                    <div class="spec-item" title="Số chỗ">
+                        <i class="fas fa-user-friends text-secondary"></i>
+                        <span>${car.seats} chỗ</span>
                     </div>
                 </div>
-                <div class="card-body p-3 bg-white" style="border-radius: 0 0 12px 12px;">
-                    <h5 class="fw-bold mb-1 text-dark">${car.make} ${car.model}</h5>
 
-                    ${galleryHtml}
+                ${galleryHtml}
 
-                    <p class="text-muted small mb-3 mt-2"><i class="fas fa-map-marker-alt me-1 text-danger"></i> ${car.location}</p>
-
-                    <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded">
-                        <div class="small text-secondary"><i class="fas fa-user me-1"></i> ${car.seats} chỗ</div>
-                        <div class="small text-secondary"><i class="fas fa-cogs me-1"></i> ${car.transmission}</div>
+                <div class="car-footer mt-3 pt-3 border-top">
+                    <div>
+                        <span class="price-text text-primary">${formatPrice(car.amount)}</span>
+                        <span class="price-sub">/ngày</span>
                     </div>
-
-                    <div class="d-flex justify-content-between align-items-end border-top pt-3">
-                        <div>
-                            <span class="fw-bold text-primary fs-5">${formatPrice(car.amount)}</span>
-                            <small class="text-muted">/ngày</small>
-                        </div>
-                        <button class="btn btn-primary text-white fw-bold btn-sm px-3" onclick="event.stopPropagation(); rentCar(${car.id})">
-                            Thuê Ngay
-                        </button>
-                    </div>
+                    <button class="btn btn-primary-custom btn-sm px-3 shadow-sm" onclick="event.stopPropagation(); rentCar(${car.id})">
+                        Thuê ngay
+                    </button>
                 </div>
             </div>
         </div>
@@ -197,7 +212,7 @@ function displayCars() {
     displayPagination();
 }
 
-// === 3. CÁC HÀM PHỤ TRỢ ===
+// === 3. CÁC HÀM PHỤ TRỢ (GIỮ NGUYÊN LOGIC CŨ) ===
 function displayPagination() {
     const pagination = document.getElementById('pagination');
     if (!pagination) return;
@@ -209,13 +224,13 @@ function displayPagination() {
     }
 
     let html = '';
-    html += `<button class="btn btn-outline-secondary me-1" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+    html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
 
     for (let i = 1; i <= totalPages; i++) {
-        html += `<button class="btn ${i === currentPage ? 'btn-warning text-white' : 'btn-outline-secondary'} me-1" onclick="goToPage(${i})">${i}</button>`;
+        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
     }
 
-    html += `<button class="btn btn-outline-secondary" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+    html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
     pagination.innerHTML = html;
 }
 
@@ -255,10 +270,17 @@ function applyFilters() {
 }
 
 function clearFilters() {
-    ['locationFilter', 'brandFilter', 'yearFilter', 'priceFilter', 'searchInput'].forEach(id => {
+    ['locationFilter', 'brandFilter', 'yearFilter', 'searchInput'].forEach(id => {
         const el = document.getElementById(id);
         if(el) el.value = '';
     });
+    // Reset thanh trượt giá
+    const priceRange = document.getElementById('priceFilter');
+    if(priceRange) {
+        priceRange.value = priceRange.max; // Mặc định về max
+        document.getElementById('priceValue').innerText = new Intl.NumberFormat('vi-VN').format(priceRange.max) + 'đ';
+    }
+
     filteredCars = [...allCars];
     currentPage = 1;
     displayCars();
@@ -282,7 +304,6 @@ function rentCar(carId) {
     window.location.href = `/cars/booking.html?carId=${carId}`;
 }
 
-// Dữ liệu mẫu fallback
 function generateSampleCars() {
     const brands = ['Toyota', 'Honda', 'Mazda', 'Ford', 'Mercedes'];
     const locs = ['TP. Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng'];
@@ -293,9 +314,10 @@ function generateSampleCars() {
         year: 2020 + Math.floor(Math.random() * 5),
         location: locs[Math.floor(Math.random() * locs.length)],
         amount: 500000 + Math.floor(Math.random() * 20) * 50000,
-        imageName: 'https://images.unsplash.com/photo-1550355291-643a809b19e7?auto=format&fit=crop&w=500&q=60',
-        gallery: [], // Mặc định rỗng cho data mẫu
+        imageName: 'https://freepngimg.com/thumb/car/4-2-car-png-hd.png',
+        gallery: [],
         seats: 4 + Math.floor(Math.random() * 2) * 3,
-        transmission: Math.random() > 0.5 ? 'Tự động' : 'Số sàn'
+        transmission: Math.random() > 0.5 ? 'Tự động' : 'Số sàn',
+        fuel: Math.random() > 0.5 ? 'Xăng' : 'Dầu'
     }));
 }
